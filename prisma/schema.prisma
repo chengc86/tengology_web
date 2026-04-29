@@ -1,0 +1,346 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+// ─── Auth ───────────────────────────────────────────
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  emailVerified DateTime?
+  passwordHash  String?
+  name          String?
+  phone         String?
+  image         String?
+  role          String    @default("CUSTOMER")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts  Account[]
+  sessions  Session[]
+  addresses Address[]
+  orders    Order[]
+  cartItems CartItem[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// ─── Address ────────────────────────────────────────
+
+model Address {
+  id        String  @id @default(cuid())
+  userId    String
+  label     String  @default("Home")
+  firstName String
+  lastName  String
+  line1     String
+  line2     String?
+  city      String
+  county    String?
+  postcode  String
+  country   String  @default("GB")
+  isDefault Boolean @default(false)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ─── Products ───────────────────────────────────────
+
+model Product {
+  id                String   @id @default(cuid())
+  slug              String   @unique
+  title             String
+  shortDescription  String?
+  fullDescription   String?
+  category          String   @default("OTHER")
+  subcategory       String?
+  materials         String   @default("") // comma-separated
+  price             Float
+  compareAtPrice    Float?
+  stockCount        Int      @default(0)
+  lowStockThreshold Int      @default(3)
+  weight            Float?
+  isPublished       Boolean  @default(false)
+  isFeatured        Boolean  @default(false)
+  collection        String?
+  intention         String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  images        ProductImage[]
+  tags          ProductTag[]
+  seo           ProductSeo?
+  cartItems     CartItem[]
+  orderItems    OrderItem[]
+  inventoryLogs InventoryLog[]
+  etsySync      EtsySync?
+  squareSync    SquareSync?
+  socialDrafts  SocialDraft[]
+}
+
+model ProductImage {
+  id           String  @id @default(cuid())
+  productId    String
+  url          String
+  altText      String?
+  sortOrder    Int     @default(0)
+  isPrimary    Boolean @default(false)
+  cloudinaryId String?
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model Tag {
+  id   String @id @default(cuid())
+  name String @unique
+  slug String @unique
+
+  products ProductTag[]
+}
+
+model ProductTag {
+  productId String
+  tagId     String
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  tag     Tag     @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([productId, tagId])
+}
+
+model ProductSeo {
+  id              String  @id @default(cuid())
+  productId       String  @unique
+  metaTitle       String?
+  metaDescription String?
+  focusKeyword    String?
+  ogTitle         String?
+  ogDescription   String?
+  ogImageUrl      String?
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+// ─── Cart ───────────────────────────────────────────
+
+model CartItem {
+  id        String   @id @default(cuid())
+  userId    String?
+  sessionId String?
+  productId String
+  quantity  Int      @default(1)
+  addedAt   DateTime @default(now())
+
+  user    User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+// ─── Orders ─────────────────────────────────────────
+
+model Order {
+  id          String   @id @default(cuid())
+  orderNumber String   @unique
+  userId      String?
+  guestEmail  String?
+  status      String   @default("PENDING")
+
+  subtotal     Float
+  shippingCost Float    @default(0)
+  taxAmount    Float    @default(0)
+  total        Float
+
+  shippingAddress String? // JSON string
+  billingAddress  String? // JSON string
+  notes           String?
+
+  squarePaymentId String?
+  squareOrderId   String?
+  etsyReceiptId   String?
+
+  shippingCarrier String?
+  trackingNumber  String?
+  shippedAt       DateTime?
+  deliveredAt     DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user  User?       @relation(fields: [userId], references: [id])
+  items OrderItem[]
+}
+
+model OrderItem {
+  id                   String @id @default(cuid())
+  orderId              String
+  productId            String
+  productTitleSnapshot String
+  quantity             Int
+  unitPrice            Float
+  totalPrice           Float
+
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id])
+}
+
+// ─── Inventory ──────────────────────────────────────
+
+model InventoryLog {
+  id             String   @id @default(cuid())
+  productId      String
+  changeType     String   // SALE, RESTOCK, ADJUSTMENT, ETSY_SYNC, SQUARE_SYNC, MANUAL
+  quantityBefore Int
+  quantityAfter  Int
+  delta          Int
+  note           String?
+  triggeredBy    String?
+  createdAt      DateTime @default(now())
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+// ─── Sync ───────────────────────────────────────────
+
+model EtsySync {
+  id            String    @id @default(cuid())
+  productId     String    @unique
+  etsyListingId String    @unique
+  lastSyncedAt  DateTime?
+  syncStatus    String    @default("PENDING")
+  lastError     String?
+  etsyUrl       String?
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model SquareSync {
+  id                  String    @id @default(cuid())
+  productId           String    @unique
+  squareCatalogItemId String    @unique
+  squareVariationId   String?
+  lastSyncedAt        DateTime?
+  syncStatus          String    @default("PENDING")
+  lastError           String?
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+// ─── Shipping ───────────────────────────────────────
+
+model ShippingZone {
+  id            String @id @default(cuid())
+  name          String
+  baseRate      Float
+  freeThreshold Float?
+}
+
+// ─── Site Settings ──────────────────────────────────
+
+model Announcement {
+  id        String    @id @default(cuid())
+  message   String
+  isActive  Boolean   @default(true)
+  startsAt  DateTime  @default(now())
+  endsAt    DateTime?
+}
+
+// ─── Social Media ───────────────────────────────────
+
+model SocialAccount {
+  id           String   @id @default(cuid())
+  platform     String   // INSTAGRAM, FACEBOOK, TIKTOK, X, PINTEREST
+  accountName  String
+  accessToken  String?
+  refreshToken String?
+  tokenExpiry  DateTime?
+  isConnected  Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  posts SocialPost[]
+}
+
+model SocialDraft {
+  id          String   @id @default(cuid())
+  date        DateTime // the date this draft is for
+  platform    String   // INSTAGRAM, FACEBOOK, TIKTOK, X, PINTEREST, ALL
+  caption     String
+  hashtags    String   @default("") // comma-separated
+  imageUrl    String?  // product image from site
+  videoUrl    String?  // generated video URL
+  videoJobId  String?  // MiniMax job ID for tracking
+  productId   String?  // linked product
+  theme       String?  // e.g. "product spotlight", "behind the scenes", "seasonal"
+  status      String   @default("PENDING") // PENDING, APPROVED, REJECTED, POSTED
+  isSelected  Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  product Product? @relation(fields: [productId], references: [id])
+}
+
+model SocialPost {
+  id               String   @id @default(cuid())
+  draftId          String?
+  socialAccountId  String
+  platform         String
+  caption          String
+  hashtags         String   @default("")
+  imageUrl         String?
+  videoUrl         String?
+  platformPostId   String?  // ID returned by the platform after posting
+  platformPostUrl  String?  // URL to the live post
+  status           String   @default("PENDING") // PENDING, POSTED, FAILED
+  error            String?
+  scheduledFor     DateTime?
+  postedAt         DateTime?
+  createdAt        DateTime @default(now())
+
+  socialAccount SocialAccount @relation(fields: [socialAccountId], references: [id])
+}
+
+model SocialSchedule {
+  id        String @id @default(cuid())
+  platform  String @unique // INSTAGRAM, FACEBOOK, TIKTOK, X, PINTEREST
+  postTime  String // HH:MM in 24h format (UK time)
+  isActive  Boolean @default(true)
+  timezone  String  @default("Europe/London")
+}
