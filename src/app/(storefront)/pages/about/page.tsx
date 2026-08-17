@@ -66,8 +66,8 @@ export default function AboutPage() {
               </h2>
               <div className="relative aspect-[3/4] rounded-sm overflow-hidden">
                 <Image
-                  src="/Gemini_Generated_Image_x3kuaox3kuaox3ku.png"
-                  alt="Sheets of wool felt in jewel tones with scissors, thread, and handmade felt bows on a wooden table"
+                  src="/lookbook/felt-flower-headband-portrait.jpg"
+                  alt="A girl in a garden wearing a handmade wool felt flower headband"
                   fill
                   className="object-cover"
                 />

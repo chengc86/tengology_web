@@ -3,8 +3,11 @@ generator client {
   output   = "../src/generated/prisma"
 }
 
+// Prisma 7 no longer accepts connection URLs here — the CLI reads them from
+// prisma.config.ts, and the runtime client gets them via the adapter in
+// src/lib/db.ts.
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
 }
 
 // ─── Auth ───────────────────────────────────────────
@@ -18,14 +21,19 @@ model User {
   phone         String?
   image         String?
   role          String    @default("CUSTOMER")
+  marketingOptIn Boolean  @default(false)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  accounts  Account[]
-  sessions  Session[]
-  addresses Address[]
-  orders    Order[]
-  cartItems CartItem[]
+  accounts    Account[]
+  sessions    Session[]
+  addresses   Address[]
+  orders      Order[]
+  cartItems   CartItem[]
+  wishlist    WishlistItem[]
+  reviews     ProductReview[]
+  redemptions DiscountRedemption[]
+  designs     SavedDesign[]
 }
 
 model Account {
@@ -72,6 +80,7 @@ model Address {
   label     String  @default("Home")
   firstName String
   lastName  String
+  phone     String?
   line1     String
   line2     String?
   city      String
@@ -80,7 +89,12 @@ model Address {
   country   String  @default("GB")
   isDefault Boolean @default(false)
 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 // ─── Products ───────────────────────────────────────
@@ -115,6 +129,11 @@ model Product {
   etsySync      EtsySync?
   squareSync    SquareSync?
   socialDrafts  SocialDraft[]
+  wishlistedBy  WishlistItem[]
+  reviews       ProductReview[]
+
+  @@index([isPublished, category])
+  @@index([isPublished, isFeatured])
 }
 
 model ProductImage {
@@ -169,9 +188,13 @@ model CartItem {
   productId String
   quantity  Int      @default(1)
   addedAt   DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 
   user    User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
   product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
+  @@index([sessionId])
 }
 
 // ─── Orders ─────────────────────────────────────────
@@ -181,44 +204,263 @@ model Order {
   orderNumber String   @unique
   userId      String?
   guestEmail  String?
-  status      String   @default("PENDING")
+  email       String   @default("")
+  phone       String?
 
-  subtotal     Float
-  shippingCost Float    @default(0)
-  taxAmount    Float    @default(0)
-  total        Float
+  // Lifecycle. status is the headline state shown to customers;
+  // paymentStatus and fulfillmentStatus track the two independent workflows.
+  status            String @default("PENDING")
+  paymentStatus     String @default("UNPAID")
+  fulfillmentStatus String @default("UNFULFILLED")
+
+  currency       String @default("GBP")
+  subtotal       Float
+  discountAmount Float  @default(0)
+  shippingCost   Float  @default(0)
+  taxAmount      Float  @default(0)
+  total          Float
+  refundedAmount Float  @default(0)
+
+  discountCode       String?
+  shippingMethodId   String?
+  shippingMethodName String?
 
   shippingAddress String? // JSON string
   billingAddress  String? // JSON string
-  notes           String?
+  notes           String? // customer-supplied delivery notes
+  adminNotes      String? // internal, never shown to the customer
+  giftMessage     String?
+
+  // Guest orders are looked up with this unguessable token instead of a login.
+  guestToken String? @unique
 
   squarePaymentId String?
   squareOrderId   String?
+  squareReceiptUrl String?
   etsyReceiptId   String?
 
   shippingCarrier String?
   trackingNumber  String?
-  shippedAt       DateTime?
-  deliveredAt     DateTime?
+  trackingUrl     String?
+
+  paidAt       DateTime?
+  shippedAt    DateTime?
+  deliveredAt  DateTime?
+  cancelledAt  DateTime?
+  cancelReason String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user  User?       @relation(fields: [userId], references: [id])
-  items OrderItem[]
+  user     User?        @relation(fields: [userId], references: [id])
+  items    OrderItem[]
+  payments Payment[]
+  refunds  Refund[]
+  events   OrderEvent[]
+  reviews  ProductReview[]
+  redemptions DiscountRedemption[]
+
+  @@index([userId, createdAt])
+  @@index([status])
+  @@index([email])
+  @@index([createdAt])
 }
 
 model OrderItem {
-  id                   String @id @default(cuid())
+  id                   String  @id @default(cuid())
   orderId              String
   productId            String
   productTitleSnapshot String
+  productSlugSnapshot  String?
+  productImageSnapshot String?
   quantity             Int
   unitPrice            Float
   totalPrice           Float
+  quantityRefunded     Int     @default(0)
 
   order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
   product Product @relation(fields: [productId], references: [id])
+
+  @@index([orderId])
+}
+
+// ─── Payments & Refunds ─────────────────────────────
+
+model Payment {
+  id              String  @id @default(cuid())
+  orderId         String
+  provider        String  @default("SQUARE")
+  squarePaymentId String? @unique
+  squareOrderId   String?
+  idempotencyKey  String  @unique
+
+  status   String // PENDING, APPROVED, COMPLETED, CANCELED, FAILED
+  amount   Float
+  currency String @default("GBP")
+
+  cardBrand    String?
+  last4        String?
+  walletType   String? // APPLE_PAY, GOOGLE_PAY, CASH_APP…
+  receiptUrl   String?
+  errorCode    String?
+  errorMessage String?
+  raw          String? // JSON snapshot of the provider response
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  order   Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  refunds Refund[]
+
+  @@index([orderId])
+}
+
+model Refund {
+  id             String  @id @default(cuid())
+  orderId        String
+  paymentId      String?
+  squareRefundId String? @unique
+  idempotencyKey String  @unique
+
+  amount   Float
+  currency String @default("GBP")
+  reason   String?
+  status   String @default("PENDING") // PENDING, COMPLETED, REJECTED, FAILED
+  restocked Boolean @default(false)
+  errorMessage String?
+  createdBy String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  order   Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  payment Payment? @relation(fields: [paymentId], references: [id])
+
+  @@index([orderId])
+}
+
+// ─── Order timeline ─────────────────────────────────
+
+model OrderEvent {
+  id      String  @id @default(cuid())
+  orderId String
+  type    String // CREATED, PAYMENT_SUCCEEDED, PAYMENT_FAILED, STATUS_CHANGED, SHIPPED, DELIVERED, CANCELLED, REFUNDED, NOTE, EMAIL_SENT
+  message String
+  meta    String? // JSON
+  actor   String? // user id, "system", "customer", "square-webhook"
+  isCustomerVisible Boolean @default(true)
+
+  createdAt DateTime @default(now())
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId, createdAt])
+}
+
+// ─── Discounts ──────────────────────────────────────
+
+model DiscountCode {
+  id          String  @id @default(cuid())
+  code        String  @unique
+  description String?
+  type        String  @default("PERCENT") // PERCENT, FIXED, FREE_SHIPPING
+  value       Float   @default(0)
+
+  minSubtotal      Float?
+  maxRedemptions   Int?
+  perCustomerLimit Int?
+  timesRedeemed    Int     @default(0)
+  isActive         Boolean @default(true)
+
+  startsAt  DateTime  @default(now())
+  endsAt    DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  redemptions DiscountRedemption[]
+}
+
+model DiscountRedemption {
+  id             String @id @default(cuid())
+  discountCodeId String
+  orderId        String
+  userId         String?
+  email          String
+  amount         Float
+
+  createdAt DateTime @default(now())
+
+  discountCode DiscountCode @relation(fields: [discountCodeId], references: [id], onDelete: Cascade)
+  order        Order        @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  user         User?        @relation(fields: [userId], references: [id])
+
+  @@unique([discountCodeId, orderId])
+  @@index([email])
+}
+
+// ─── Wishlist ───────────────────────────────────────
+
+model WishlistItem {
+  id        String   @id @default(cuid())
+  userId    String
+  productId String
+  createdAt DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
+}
+
+// ─── Reviews ────────────────────────────────────────
+
+model ProductReview {
+  id        String  @id @default(cuid())
+  productId String
+  userId    String?
+  orderId   String?
+
+  authorName String
+  rating     Int
+  title      String?
+  body       String?
+
+  isApproved         Boolean @default(false)
+  isVerifiedPurchase Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  user    User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+  order   Order?  @relation(fields: [orderId], references: [id], onDelete: SetNull)
+
+  @@index([productId, isApproved])
+}
+
+// ─── Transactional email log ────────────────────────
+
+model EmailLog {
+  id         String  @id @default(cuid())
+  to         String
+  subject    String
+  template   String
+  orderId    String?
+  status     String  @default("SENT") // SENT, FAILED, SKIPPED
+  providerId String?
+  error      String?
+
+  createdAt DateTime @default(now())
+
+  @@index([orderId])
+}
+
+// ─── Store settings (key/value) ─────────────────────
+
+model Setting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
 }
 
 // ─── Inventory ──────────────────────────────────────
@@ -272,6 +514,23 @@ model ShippingZone {
   freeThreshold Float?
 }
 
+model ShippingMethod {
+  id            String  @id @default(cuid())
+  name          String
+  description   String?
+  carrier       String?
+  price         Float   @default(0)
+  freeThreshold Float? // subtotal at or above which this method is free
+  minDays       Int?
+  maxDays       Int?
+  countries     String  @default("GB") // comma-separated ISO codes, or "*" for anywhere
+  isActive      Boolean @default(true)
+  sortOrder     Int     @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 // ─── Site Settings ──────────────────────────────────
 
 model Announcement {
@@ -280,6 +539,66 @@ model Announcement {
   isActive  Boolean   @default(true)
   startsAt  DateTime  @default(now())
   endsAt    DateTime?
+}
+
+// ─── Jewelry designer ───────────────────────────────
+
+enum JewelryKind {
+  bracelet
+  necklace
+  ring
+  earrings
+}
+
+model SavedDesign {
+  id           String      @id @default(cuid())
+  userId       String?
+  kind         JewelryKind
+  state        Json // validated against DesignStateSchema on read
+  thumbnailUrl String?
+  shareSlug    String      @unique @default(cuid())
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId, createdAt])
+}
+
+// Purchased bead strands. Unit cost per bead feeds designer retail pricing.
+model InventoryLot {
+  id              String  @id @default(cuid())
+  sku             String  @unique
+  catalogSlug     String
+  catalogName     String
+  sourceImageFile String?
+  labelText       String?
+  productName     String
+  material        String
+  shape           String
+  // Money and physical quantities are exact: unit cost per bead is a division
+  // of a purchase price by beads-per-strand, and float drift compounds there.
+  sizeMm          Decimal? @db.Decimal(6, 2)
+
+  purchaseQuantity          Int     @default(1)
+  unitPurchasePriceCny      Decimal @db.Decimal(10, 2)
+  beadsPerStrand            Int
+  estimatedWeightGPerStrand Decimal @db.Decimal(10, 2)
+  shippingRateCnyPerKg      Decimal @default(80) @db.Decimal(10, 2)
+  shippingCnyPerStrand      Decimal @db.Decimal(10, 2)
+  totalCostCnyPerStrand     Decimal @db.Decimal(10, 2)
+  unitCostCnyPerBead        Decimal @db.Decimal(10, 2)
+
+  priceConfidence  String @default("confirmed")
+  countConfidence  String @default("estimated")
+  weightConfidence String @default("estimated")
+
+  notes     String?  @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([material])
+  @@index([productName])
 }
 
 // ─── Social Media ───────────────────────────────────

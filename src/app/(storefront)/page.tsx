@@ -8,7 +8,7 @@ const collections = [
     name: "Hair Accessories",
     href: "/shop?category=HAIR_ACCESSORIES",
     description: "Handcrafted clips, barrettes & headbands",
-    image: "/Gemini_Generated_Image_3er8vq3er8vq3er8.png",
+    image: "/lookbook/felt-flower-headband-portrait.jpg",
   },
   {
     name: "Jewellery",
@@ -20,7 +20,7 @@ const collections = [
     name: "Christmas",
     href: "/shop?category=CHRISTMAS_ORNAMENTS",
     description: "Festive ornaments & decorations",
-    image: "/Gemini_Generated_Image_xd2ijaxd2ijaxd2i.png",
+    image: "/lookbook/felt-sprout-ornaments-pair.jpg",
   },
   {
     name: "Brooches",
@@ -50,8 +50,8 @@ export default async function HomePage() {
       {/* Hero */}
       <section className="relative bg-muted overflow-hidden">
         <Image
-          src="/Gemini_Generated_Image_puwi5mpuwi5mpuwi.png"
-          alt="Handcrafted accessories — wool felt clips, crystal bracelets, batik earrings, and stained glass pendants on natural linen"
+          src="/lookbook/felt-flower-headbands-garden.jpg"
+          alt="Two girls lying in the grass wearing handmade wool felt flower headbands"
           fill
           priority
           className="object-cover opacity-30"
@@ -149,8 +149,8 @@ export default async function HomePage() {
           <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
             <div className="relative aspect-[4/3] rounded-sm overflow-hidden">
               <Image
-                src="/Gemini_Generated_Image_9ug1079ug1079ug1.png"
-                alt="Artisan hands threading crystal beads at a wooden workbench"
+                src="/lookbook/felt-sprout-ornaments-wreath.jpg"
+                alt="Hand-stitched wool felt sprout ornaments with brass bells, arranged on a willow wreath"
                 fill
                 className="object-cover"
               />

@@ -152,9 +152,11 @@ export default async function ShopPage({
         ...(intention ? { intention } : {}),
         ...(query
           ? {
+              // Postgres `LIKE` is case-sensitive, so shopper searches need
+              // an explicit insensitive mode to behave the way people expect.
               OR: [
-                { title: { contains: query } },
-                { shortDescription: { contains: query } },
+                { title: { contains: query, mode: "insensitive" as const } },
+                { shortDescription: { contains: query, mode: "insensitive" as const } },
               ],
             }
           : {}),
@@ -182,8 +184,8 @@ export default async function ShopPage({
       {/* Shop Hero */}
       <div className="relative h-48 lg:h-64 overflow-hidden bg-muted">
         <Image
-          src="/Gemini_Generated_Image_x8rybfx8rybfx8ry.png"
-          alt="Handcrafted accessories on a rustic wooden shelf with succulents"
+          src="/lookbook/felt-sprout-ornaments-wreath-wide.jpg"
+          alt="A willow wreath laid with handmade wool felt sprout ornaments and brass bells"
           fill
           priority
           className="object-cover opacity-40"

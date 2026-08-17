@@ -11,13 +11,19 @@ import {
   Settings,
   Store,
   Share2,
+  Ticket,
+  Users,
+  Gem,
 } from "lucide-react";
 
 const navItems = [
   { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
   { name: "Products", href: "/admin/products", icon: Package },
   { name: "Orders", href: "/admin/orders", icon: ShoppingCart },
+  { name: "Customers", href: "/admin/customers", icon: Users },
+  { name: "Discounts", href: "/admin/discounts", icon: Ticket },
   { name: "Inventory", href: "/admin/inventory", icon: BarChart3 },
+  { name: "Bead Costs", href: "/admin/costs", icon: Gem },
   { name: "Social Media", href: "/admin/social", icon: Share2 },
   { name: "Sync", href: "/admin/sync", icon: RefreshCw },
   { name: "Settings", href: "/admin/settings", icon: Settings },
@@ -27,7 +33,7 @@ export function AdminSidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="w-60 border-r bg-sidebar min-h-screen flex flex-col">
+    <aside className="w-60 border-r bg-sidebar min-h-screen flex flex-col print:hidden">
       {/* Brand */}
       <div className="p-6 border-b">
         <Link href="/admin">

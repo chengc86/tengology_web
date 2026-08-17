@@ -1,7 +1,9 @@
 import { prisma } from "@/lib/db";
 import { notFound } from "next/navigation";
 import { formatPrice } from "@/lib/format";
+import { auth } from "@/lib/auth";
 import { AddToCartButton } from "@/components/storefront/AddToCartButton";
+import { WishlistButton } from "@/components/storefront/WishlistButton";
 import type { Metadata } from "next";
 
 export async function generateMetadata({
@@ -51,6 +53,16 @@ export default async function ProductPage({
   if (!product) notFound();
 
   const price = product.price;
+
+  const session = await auth();
+  const isSaved = session?.user?.id
+    ? Boolean(
+        await prisma.wishlistItem.findUnique({
+          where: { userId_productId: { userId: session.user.id, productId: product.id } },
+          select: { id: true },
+        })
+      )
+    : false;
 
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10 lg:py-16">
@@ -134,13 +146,21 @@ export default async function ProductPage({
               )}
             </div>
 
-            <AddToCartButton
-              productId={product.id}
-              title={product.title}
-              price={price}
-              image={product.images[0]?.url}
-              inStock={product.stockCount > 0}
-            />
+            <div className="space-y-2">
+              <AddToCartButton
+                productId={product.id}
+                title={product.title}
+                price={price}
+                image={product.images[0]?.url}
+                inStock={product.stockCount > 0}
+              />
+              <WishlistButton
+                productId={product.id}
+                productSlug={product.slug}
+                initiallySaved={isSaved}
+                isSignedIn={Boolean(session?.user?.id)}
+              />
+            </div>
 
             {/* Materials */}
             {product.materials && product.materials.length > 0 && (

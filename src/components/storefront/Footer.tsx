@@ -9,6 +9,8 @@ const footerLinks = {
     { name: "Brooches", href: "/shop?category=BROOCHES" },
   ],
   Help: [
+    { name: "Track Your Order", href: "/orders/lookup" },
+    { name: "My Account", href: "/account" },
     { name: "Shipping", href: "/pages/shipping" },
     { name: "Returns", href: "/pages/returns" },
     { name: "FAQ", href: "/pages/faq" },

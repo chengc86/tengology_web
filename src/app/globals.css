@@ -110,3 +110,93 @@
     font-family: var(--font-heading);
   }
 }
+
+/* ─── Jewellery designer surfaces ──────────────────────
+   Ported from the crystal designer, retoned from its sage/peacock
+   palette to the Tengology warm neutral + dusty rose accents so the
+   designer reads as the same site as the storefront. */
+
+/* Soft warm wash sitting behind designer and encyclopedia pages. */
+@utility atelier-wash {
+  background-image:
+    linear-gradient(135deg, oklch(0.76 0.06 15 / 0.10) 0%, oklch(0.76 0.06 15 / 0) 34%),
+    linear-gradient(215deg, oklch(0.70 0.03 20 / 0.10) 0%, oklch(0.70 0.03 20 / 0) 42%),
+    linear-gradient(180deg, var(--background) 0%, var(--muted) 54%, var(--background) 100%);
+}
+
+/* Frosted card surface used by designer side panels. */
+@utility panel {
+  background: color-mix(in oklab, var(--card) 82%, transparent);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+  box-shadow:
+    0 1px 2px oklch(0.18 0.02 30 / 0.05),
+    0 10px 26px oklch(0.18 0.02 30 / 0.06);
+}
+
+/* The bead canvas stage: warm radial pools instead of the original
+   teal/gold ones, with a faint grid masked to the centre. */
+@utility designer-stage {
+  background:
+    radial-gradient(circle at 50% 34%, oklch(0.76 0.06 15 / 0.16), oklch(0.76 0.06 15 / 0) 30%),
+    radial-gradient(circle at 18% 18%, oklch(0.92 0.03 15 / 0.5), oklch(0.92 0.03 15 / 0) 32%),
+    radial-gradient(circle at 84% 74%, oklch(0.70 0.03 20 / 0.14), oklch(0.70 0.03 20 / 0) 34%),
+    linear-gradient(180deg, var(--background) 0%, var(--muted) 100%);
+}
+
+.designer-stage::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(oklch(0.18 0.02 30 / 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, oklch(0.18 0.02 30 / 0.035) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(circle at center, black 0%, black 42%, transparent 78%);
+}
+
+@utility scrollbar-thin {
+  &::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: color-mix(in oklab, var(--rose-dark) 40%, transparent);
+    border-radius: 9999px;
+  }
+}
+
+@utility pb-safe {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Landscape phones: collapse designer chrome so the stage keeps its height. */
+@media (orientation: landscape) and (max-height: 500px) and (max-width: 900px) {
+  .designer-kind-tabs {
+    display: none;
+  }
+  .designer-mobile-panel {
+    max-height: 108px;
+  }
+  .designer-mobile-panel-content {
+    display: none;
+  }
+  .designer-price-panel {
+    padding: 0.5rem 0.75rem;
+  }
+  .designer-price-total {
+    font-size: 1.125rem;
+    line-height: 1.25rem;
+  }
+  .designer-price-meta {
+    display: none;
+  }
+}
+
+canvas {
+  display: block;
+}

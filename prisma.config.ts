@@ -1,5 +1,4 @@
 import "dotenv/config";
-import path from "node:path";
 import { defineConfig } from "prisma/config";
 
 export default defineConfig({
@@ -8,6 +7,9 @@ export default defineConfig({
     path: "prisma/migrations",
   },
   datasource: {
-    url: `file:${path.join(process.cwd(), "prisma", "dev.db")}`,
+    // DDL runs on Neon's direct (non-pooled) endpoint — the pooler does not
+    // support the session-level operations migrations need. The application
+    // itself uses the pooled DATABASE_URL via the adapter in src/lib/db.ts.
+    url: process.env.DIRECT_URL ?? process.env.DATABASE_URL,
   },
 });
