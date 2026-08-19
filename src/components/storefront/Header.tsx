@@ -1,13 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { ShoppingBag, Menu, X, Package, User } from "lucide-react";
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { usePathname } from "next/navigation";
+import { ShoppingBag, Menu, Package, User } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { useCartStore } from "@/store/cart";
 import { useHydrated } from "@/lib/use-hydrated";
 import { CartDrawer } from "./CartDrawer";
+import { cn } from "@/lib/utils";
 
 const navigation = [
   { name: "Shop", href: "/shop" },
@@ -18,108 +19,228 @@ const navigation = [
   { name: "Crystal Guide", href: "/encyclopedia" },
 ];
 
+const tickerItems = [
+  "Handmade in Oxford",
+  "Small batch",
+  "Wool felt & crystal",
+  "Free UK delivery over £50",
+  "Worldwide shipping",
+];
+
+/** One half of the marquee; two of them scroll seamlessly end to end. */
+function TickerHalf({ ariaHidden = false }: { ariaHidden?: boolean }) {
+  return (
+    <div
+      aria-hidden={ariaHidden || undefined}
+      className="flex w-max shrink-0 items-center"
+    >
+      {Array.from({ length: 3 }).flatMap((_, round) =>
+        tickerItems.map((text, i) => (
+          <span
+            key={`${round}-${i}`}
+            className="eyebrow flex items-center whitespace-nowrap py-2.5"
+          >
+            {text}
+            <span aria-hidden className="mx-8">
+              &mdash;
+            </span>
+          </span>
+        ))
+      )}
+    </div>
+  );
+}
+
 export function Header() {
+  const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const itemCount = useCartStore((s) => s.totalItems());
+  const isOpen = useCartStore((s) => s.isOpen);
+  const openCart = useCartStore((s) => s.openCart);
+  const closeCart = useCartStore((s) => s.closeCart);
 
   // The cart is restored from localStorage after hydration, so the badge stays
   // hidden on the first paint to keep server and client markup identical.
   const mounted = useHydrated();
 
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // Checkout drops the nav and ticker to keep the payment path distraction-free.
+  const isCheckout = pathname.startsWith("/checkout");
+
+  const bagButton = (
+    <button
+      type="button"
+      onClick={openCart}
+      aria-label={`Open bag${mounted && itemCount > 0 ? `, ${itemCount} items` : ""}`}
+      className="relative inline-flex h-9 w-9 items-center justify-center transition-colors hover:text-moss"
+    >
+      <ShoppingBag className="h-5 w-5" />
+      {mounted && itemCount > 0 && (
+        <span
+          key={itemCount}
+          className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center bg-foreground px-1 text-[10px] font-medium tabular-nums text-background motion-safe:animate-[badge-pop_300ms_var(--ease-snap)]"
+        >
+          {itemCount}
+        </span>
+      )}
+    </button>
+  );
+
   return (
-    <header className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
-      {/* Announcement bar */}
-      <div className="bg-primary text-primary-foreground text-center text-xs tracking-widest uppercase py-2 px-4">
-        Designed &amp; Made in Oxford &mdash; Worldwide delivery &middot; Free UK shipping over
-        &pound;50
-      </div>
+    <header
+      data-scrolled={scrolled ? "true" : undefined}
+      style={
+        { "--header-h": scrolled ? "4rem" : "5rem" } as React.CSSProperties
+      }
+      className={cn(
+        "sticky top-0 z-50 bg-background/95 backdrop-blur transition-shadow supports-[backdrop-filter]:bg-background/85",
+        scrolled && "shadow-[var(--shadow-soft)]"
+      )}
+    >
+      {!isCheckout && (
+        <div className="overflow-hidden border-b">
+          <div className="flex w-max motion-safe:animate-[marquee_38s_linear_infinite] hover:[animation-play-state:paused]">
+            <TickerHalf />
+            <TickerHalf ariaHidden />
+          </div>
+        </div>
+      )}
 
       <div className="border-b">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16 lg:h-20">
+          <div
+            className={cn(
+              "flex items-center justify-between transition-[height] duration-300",
+              scrolled ? "h-16" : "h-16 lg:h-20"
+            )}
+            style={{ transitionTimingFunction: "var(--ease-soft)" }}
+          >
             {/* Mobile menu */}
-            <div className="lg:hidden">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setMobileOpen(!mobileOpen)}
-              >
-                {mobileOpen ? (
-                  <X className="h-5 w-5" />
-                ) : (
+            {!isCheckout ? (
+              <div className="lg:hidden">
+                <button
+                  type="button"
+                  onClick={() => setMobileOpen(true)}
+                  aria-label="Open menu"
+                  className="inline-flex h-9 w-9 items-center justify-center transition-colors hover:text-moss"
+                >
                   <Menu className="h-5 w-5" />
-                )}
-              </Button>
-            </div>
+                </button>
+              </div>
+            ) : (
+              <div className="lg:hidden" />
+            )}
 
-            {/* Logo */}
             <Link href="/" className="flex-shrink-0">
-              <h1 className="font-heading text-2xl lg:text-3xl font-light tracking-[0.2em] uppercase">
+              <span className="font-heading text-2xl uppercase tracking-[0.25em] lg:text-3xl">
                 Tengology
-              </h1>
+              </span>
             </Link>
 
-            {/* Desktop nav */}
-            <nav className="hidden lg:flex items-center gap-8">
-              {navigation.map((item) => (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  className="text-sm tracking-wider uppercase text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  {item.name}
-                </Link>
-              ))}
-            </nav>
+            {!isCheckout ? (
+              <nav className="hidden items-center gap-7 lg:flex">
+                {navigation.map((item) => {
+                  const active =
+                    item.href === "/shop"
+                      ? pathname === "/shop"
+                      : pathname.startsWith(item.href.split("?")[0]) &&
+                        item.href.split("?")[0] !== "/shop";
+                  return (
+                    <Link
+                      key={item.name}
+                      href={item.href}
+                      aria-current={active ? "page" : undefined}
+                      className={cn(
+                        "link-underline eyebrow transition-colors hover:text-foreground",
+                        active && "text-foreground"
+                      )}
+                    >
+                      {item.name}
+                    </Link>
+                  );
+                })}
+              </nav>
+            ) : (
+              <span className="eyebrow hidden lg:block">Secure checkout</span>
+            )}
 
-            {/* Actions */}
-            <div className="flex items-center gap-2">
-              <Button variant="ghost" size="icon" asChild aria-label="Track an order">
-                <Link href="/orders/lookup">
-                  <Package className="h-5 w-5" />
-                </Link>
-              </Button>
-              <Button variant="ghost" size="icon" asChild aria-label="My account">
-                <Link href="/account">
-                  <User className="h-5 w-5" />
-                </Link>
-              </Button>
-              <Sheet>
-                <SheetTrigger
-                  aria-label={`Open bag${mounted && itemCount > 0 ? `, ${itemCount} items` : ""}`}
-                  className="relative inline-flex items-center justify-center h-9 w-9 rounded-md hover:bg-accent hover:text-accent-foreground transition-colors"
-                >
-                  <ShoppingBag className="h-5 w-5" />
-                  {mounted && itemCount > 0 && (
-                    <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-rose text-[10px] font-medium text-white flex items-center justify-center">
-                      {itemCount}
-                    </span>
-                  )}
-                </SheetTrigger>
-                <SheetContent className="w-full sm:max-w-md">
-                  <CartDrawer />
-                </SheetContent>
-              </Sheet>
+            <div className="flex items-center gap-3">
+              {!isCheckout && (
+                <>
+                  <Link
+                    href="/orders/lookup"
+                    aria-label="Track an order"
+                    className="inline-flex h-9 w-9 items-center justify-center transition-colors hover:text-moss"
+                  >
+                    <Package className="h-5 w-5" />
+                  </Link>
+                  <Link
+                    href="/account"
+                    aria-label="My account"
+                    className="inline-flex h-9 w-9 items-center justify-center transition-colors hover:text-moss"
+                  >
+                    <User className="h-5 w-5" />
+                  </Link>
+                </>
+              )}
+              {bagButton}
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Mobile nav */}
-        {mobileOpen && (
-          <nav className="lg:hidden border-t px-4 py-4 space-y-3">
-            {navigation.map((item) => (
+      {/* Cart drawer — opened from anywhere via the store */}
+      {mounted && (
+        <Sheet open={isOpen} onOpenChange={(o) => (o ? openCart() : closeCart())}>
+          <SheetContent className="w-full sm:max-w-md">
+            <SheetTitle className="sr-only">Your bag</SheetTitle>
+            <CartDrawer />
+          </SheetContent>
+        </Sheet>
+      )}
+
+      {/* Mobile navigation */}
+      <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
+        <SheetContent side="left" className="w-full sm:max-w-sm">
+          <SheetTitle className="sr-only">Menu</SheetTitle>
+          <nav className="flex flex-col gap-1 pt-4">
+            {navigation.map((item, i) => (
               <Link
                 key={item.name}
                 href={item.href}
                 onClick={() => setMobileOpen(false)}
-                className="block text-sm tracking-wider uppercase text-muted-foreground hover:text-foreground"
+                style={{ transitionDelay: `${i * 40}ms` }}
+                className="border-t py-4 font-heading text-3xl leading-none transition-colors hover:text-moss"
               >
                 {item.name}
               </Link>
             ))}
           </nav>
-        )}
-      </div>
+          <div className="mt-8 flex flex-col gap-3 border-t pt-5">
+            <Link
+              href="/account"
+              onClick={() => setMobileOpen(false)}
+              className="link-underline eyebrow text-foreground"
+            >
+              My account
+            </Link>
+            <Link
+              href="/orders/lookup"
+              onClick={() => setMobileOpen(false)}
+              className="link-underline eyebrow text-foreground"
+            >
+              Track an order
+            </Link>
+          </div>
+        </SheetContent>
+      </Sheet>
     </header>
   );
 }

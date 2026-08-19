@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { prisma } from "@/lib/db";
 import { notFound } from "next/navigation";
 import { formatPrice } from "@/lib/format";
@@ -71,11 +72,14 @@ export default async function ProductPage({
         <div className="space-y-3">
           {product.images.length > 0 ? (
             <>
-              <div className="aspect-square bg-muted rounded-sm overflow-hidden">
-                <img
+              <div className="relative aspect-square overflow-hidden bg-muted">
+                <Image
                   src={product.images[0].url}
                   alt={product.images[0].altText || product.title}
-                  className="w-full h-full object-cover"
+                  fill
+                  priority
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                  className="object-cover"
                 />
               </div>
               {product.images.length > 1 && (
@@ -83,12 +87,14 @@ export default async function ProductPage({
                   {product.images.slice(1).map((img) => (
                     <div
                       key={img.id}
-                      className="aspect-square bg-muted rounded-sm overflow-hidden"
+                      className="relative aspect-square overflow-hidden bg-muted"
                     >
-                      <img
+                      <Image
                         src={img.url}
                         alt={img.altText || product.title}
-                        className="w-full h-full object-cover"
+                        fill
+                        sizes="(max-width: 1024px) 25vw, 12vw"
+                        className="object-cover"
                       />
                     </div>
                   ))}
@@ -96,7 +102,7 @@ export default async function ProductPage({
               )}
             </>
           ) : (
-            <div className="aspect-square bg-muted rounded-sm flex items-center justify-center">
+            <div className="flex aspect-square items-center justify-center bg-muted">
               <span className="font-heading text-6xl text-muted-foreground/20">
                 T
               </span>
@@ -105,19 +111,19 @@ export default async function ProductPage({
         </div>
 
         {/* Details */}
-        <div className="lg:py-8">
+        <div className="lg:sticky lg:top-[calc(var(--header-h,5rem)+1.5rem)] lg:self-start lg:py-8">
           <div className="space-y-6">
-            <div>
-              <p className="text-xs tracking-[0.2em] uppercase text-muted-foreground mb-2">
+            <div className="border-t pt-6">
+              <p className="eyebrow mb-4">
                 {product.collection || product.category.replace(/_/g, " ")}
               </p>
-              <h1 className="font-heading text-3xl lg:text-4xl font-light">
+              <h1 className="font-heading text-4xl leading-[0.95] lg:text-5xl">
                 {product.title}
               </h1>
             </div>
 
-            <div className="flex items-center gap-3">
-              <span className="text-xl">{formatPrice(price)}</span>
+            <div className="flex items-baseline gap-3">
+              <span className="text-xl tabular-nums">{formatPrice(price)}</span>
               {product.compareAtPrice && (
                 <span className="text-sm text-muted-foreground line-through">
                   {formatPrice(product.compareAtPrice)}
@@ -135,14 +141,14 @@ export default async function ProductPage({
             <div className="text-sm">
               {product.stockCount > 0 ? (
                 product.stockCount <= product.lowStockThreshold ? (
-                  <span className="text-amber-600">
+                  <span className="eyebrow bg-moss-light px-2 py-1 !text-moss-dark">
                     Only {product.stockCount} left
                   </span>
                 ) : (
-                  <span className="text-green-700">In stock</span>
+                  <span className="eyebrow !text-moss">In stock</span>
                 )
               ) : (
-                <span className="text-destructive">Sold out</span>
+                <span className="eyebrow !text-destructive">Sold out</span>
               )}
             </div>
 
@@ -165,14 +171,14 @@ export default async function ProductPage({
             {/* Materials */}
             {product.materials && product.materials.length > 0 && (
               <div className="border-t pt-6">
-                <h3 className="text-xs tracking-[0.15em] uppercase font-medium mb-2">
+                <h3 className="eyebrow mb-3">
                   Materials
                 </h3>
                 <div className="flex flex-wrap gap-2">
                   {product.materials.split(",").map((mat) => (
                     <span
                       key={mat.trim()}
-                      className="text-xs px-2 py-1 bg-muted rounded-sm"
+                      className="eyebrow bg-muted px-2 py-1"
                     >
                       {mat.trim()}
                     </span>
@@ -184,7 +190,7 @@ export default async function ProductPage({
             {/* Description */}
             {product.fullDescription && (
               <div className="border-t pt-6">
-                <h3 className="text-xs tracking-[0.15em] uppercase font-medium mb-3">
+                <h3 className="eyebrow mb-4">
                   Description
                 </h3>
                 <div className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">

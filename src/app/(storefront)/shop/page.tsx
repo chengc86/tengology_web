@@ -1,4 +1,6 @@
 import Image from "next/image";
+import Link from "next/link";
+import { Reveal } from "@/components/storefront/Reveal";
 import { prisma } from "@/lib/db";
 import { ProductCard } from "@/components/storefront/ProductCard";
 import type { Metadata } from "next";
@@ -182,18 +184,22 @@ export default async function ShopPage({
   return (
     <div>
       {/* Shop Hero */}
-      <div className="relative h-48 lg:h-64 overflow-hidden bg-muted">
+      <div className="relative h-44 overflow-hidden bg-muted lg:h-60">
         <Image
           src="/lookbook/felt-sprout-ornaments-wreath-wide.jpg"
           alt="A willow wreath laid with handmade wool felt sprout ornaments and brass bells"
           fill
           priority
+          sizes="100vw"
           className="object-cover opacity-40"
         />
-        <div className="relative flex items-center justify-center h-full">
-          <h1 className="font-heading text-4xl lg:text-5xl font-light">
-            Shop
-          </h1>
+        <div className="relative mx-auto flex h-full max-w-7xl items-end px-4 pb-8 sm:px-6 lg:px-8">
+          <div>
+            <p className="eyebrow mb-3">The catalogue</p>
+            <h1 className="font-heading text-5xl leading-[0.95] lg:text-6xl">
+              Shop
+            </h1>
+          </div>
         </div>
       </div>
 
@@ -217,7 +223,7 @@ export default async function ShopPage({
           </h3>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {collectionShowcases[category].map((col) => (
-              <a
+              <Link
                 key={col.slug}
                 href={`/shop?category=${category}&collection=${encodeURIComponent(col.slug)}`}
                 className="group border rounded-sm p-6 lg:p-8 transition-colors hover:bg-muted/50"
@@ -244,7 +250,7 @@ export default async function ShopPage({
                 <span className="inline-block mt-5 text-xs tracking-wider uppercase text-muted-foreground group-hover:text-foreground transition-colors">
                   View Collection &rarr;
                 </span>
-              </a>
+              </Link>
             ))}
           </div>
         </div>
@@ -253,12 +259,12 @@ export default async function ShopPage({
       {/* Collection back link */}
       {category && collection && (
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-10">
-          <a
+          <Link
             href={`/shop?category=${category}`}
             className="text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
             &larr; All {categoryLabels[category]}
-          </a>
+          </Link>
         </div>
       )}
 
@@ -276,28 +282,28 @@ export default async function ShopPage({
 
         {/* Category filter pills */}
         <div className="flex flex-wrap gap-2">
-          <a
+          <Link
             href="/shop"
-            className={`text-xs tracking-wider uppercase px-3 py-1.5 border rounded-sm transition-colors ${
+            className={`eyebrow border px-4 py-2 transition-colors ${
               !category
-                ? "bg-foreground text-background"
-                : "hover:bg-muted"
+                ? "bg-foreground !text-background"
+                : "hover:border-foreground hover:!text-foreground"
             }`}
           >
             All
-          </a>
+          </Link>
           {Object.entries(categoryLabels).map(([key, label]) => (
-            <a
+            <Link
               key={key}
               href={`/shop?category=${key}`}
-              className={`text-xs tracking-wider uppercase px-3 py-1.5 border rounded-sm transition-colors ${
+              className={`eyebrow border px-4 py-2 transition-colors ${
                 category === key
-                  ? "bg-foreground text-background"
-                  : "hover:bg-muted"
+                  ? "bg-foreground !text-background"
+                  : "hover:border-foreground hover:!text-foreground"
               }`}
             >
               {label}
-            </a>
+            </Link>
           ))}
         </div>
       </div>
@@ -305,28 +311,28 @@ export default async function ShopPage({
       {/* Subcategory filter pills */}
       {category && subcategoryLabels[category] && (
         <div className="flex flex-wrap gap-2 mb-8">
-          <a
+          <Link
             href={`/shop?category=${category}`}
-            className={`text-xs tracking-wider uppercase px-3 py-1.5 border rounded-sm transition-colors ${
+            className={`eyebrow border px-4 py-2 transition-colors ${
               !subcategory
-                ? "bg-foreground text-background"
-                : "hover:bg-muted"
+                ? "bg-foreground !text-background"
+                : "hover:border-foreground hover:!text-foreground"
             }`}
           >
             All {categoryLabels[category]}
-          </a>
+          </Link>
           {Object.entries(subcategoryLabels[category]).map(([key, label]) => (
-            <a
+            <Link
               key={key}
               href={`/shop?category=${category}&sub=${key}`}
-              className={`text-xs tracking-wider uppercase px-3 py-1.5 border rounded-sm transition-colors ${
+              className={`eyebrow border px-4 py-2 transition-colors ${
                 subcategory === key
-                  ? "bg-foreground text-background"
-                  : "hover:bg-muted"
+                  ? "bg-foreground !text-background"
+                  : "hover:border-foreground hover:!text-foreground"
               }`}
             >
               {label}
-            </a>
+            </Link>
           ))}
         </div>
       )}
@@ -337,24 +343,24 @@ export default async function ShopPage({
           <span className="text-xs tracking-[0.15em] uppercase text-muted-foreground mr-1">
             Intention
           </span>
-          <a
+          <Link
             href={`/shop?category=JEWELLERY${subcategory ? `&sub=${subcategory}` : ""}${collection ? `&collection=${encodeURIComponent(collection)}` : ""}`}
-            className={`text-xs tracking-wider uppercase px-3 py-1.5 border rounded-sm transition-colors ${
-              !intention ? "bg-foreground text-background" : "hover:bg-muted"
+            className={`eyebrow border px-4 py-2 transition-colors ${
+              !intention ? "bg-foreground !text-background" : "hover:border-foreground hover:!text-foreground"
             }`}
           >
             All
-          </a>
+          </Link>
           {intentionOptions.map((opt) => (
-            <a
+            <Link
               key={opt.value}
               href={`/shop?category=JEWELLERY${subcategory ? `&sub=${subcategory}` : ""}${collection ? `&collection=${encodeURIComponent(collection)}` : ""}&intention=${encodeURIComponent(opt.value)}`}
-              className={`text-xs tracking-wider uppercase px-3 py-1.5 border rounded-sm transition-colors ${
-                intention === opt.value ? "bg-foreground text-background" : "hover:bg-muted"
+              className={`eyebrow border px-4 py-2 transition-colors ${
+                intention === opt.value ? "bg-foreground !text-background" : "hover:border-foreground hover:!text-foreground"
               }`}
             >
               {opt.label}
-            </a>
+            </Link>
           ))}
         </div>
       )}
@@ -362,26 +368,31 @@ export default async function ShopPage({
       {/* Products grid */}
       {products.length > 0 ? (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
-          {products.map((product: { id: string; slug: string; title: string; price: number; compareAtPrice?: number | null; category: string; images: { url: string }[] }) => (
-            <ProductCard
-              key={product.id}
-              slug={product.slug}
-              title={product.title}
-              price={product.price}
-              compareAtPrice={product.compareAtPrice}
-              image={product.images[0]?.url}
-              category={product.category}
-            />
+          {products.map((product: { id: string; slug: string; title: string; price: number; compareAtPrice?: number | null; category: string; images: { url: string }[] }, i: number) => (
+            <Reveal key={product.id} delay={(i % 4) * 70}>
+              <ProductCard
+                slug={product.slug}
+                title={product.title}
+                price={product.price}
+                compareAtPrice={product.compareAtPrice}
+                image={product.images[0]?.url}
+                category={product.category}
+              />
+            </Reveal>
           ))}
         </div>
       ) : (
-        <div className="text-center py-24">
-          <p className="font-heading text-2xl font-light mb-2">
-            No products yet
+        <div className="border-t py-24 text-center">
+          <p className="eyebrow mb-4">Nothing here yet</p>
+          <p className="font-heading mb-8 text-3xl leading-[0.95]">
+            No pieces match this <em>filter</em>
           </p>
-          <p className="text-sm text-muted-foreground">
-            Check back soon — new pieces are always in the works.
-          </p>
+          <Link
+            href="/shop"
+            className="eyebrow inline-flex border border-foreground px-8 py-4 !text-foreground transition-colors hover:bg-foreground hover:!text-background"
+          >
+            Browse all
+          </Link>
         </div>
       )}
       </div>

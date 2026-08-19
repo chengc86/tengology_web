@@ -39,9 +39,15 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
-  --color-rose: var(--rose);
-  --color-rose-light: var(--rose-light);
-  --color-rose-dark: var(--rose-dark);
+  --color-moss: var(--moss);
+  --color-moss-light: var(--moss-light);
+  --color-moss-dark: var(--moss-dark);
+  --color-clay: var(--clay);
+  /* Legacy aliases — remapped to the moss family so untouched call sites
+     stay on-brand during the redesign. Prefer the moss-* names. */
+  --color-rose: var(--moss);
+  --color-rose-light: var(--moss-light);
+  --color-rose-dark: var(--moss-dark);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -52,48 +58,60 @@
 }
 
 :root {
-  /* Tengology brand — warm, high-end minimalist */
-  --background: oklch(0.99 0.002 60);
-  --foreground: oklch(0.18 0.02 30);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.18 0.02 30);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.18 0.02 30);
-  --primary: oklch(0.25 0.02 30);
-  --primary-foreground: oklch(0.98 0.005 60);
-  --secondary: oklch(0.96 0.008 30);
-  --secondary-foreground: oklch(0.25 0.02 30);
-  --muted: oklch(0.96 0.005 60);
-  --muted-foreground: oklch(0.50 0.015 30);
-  --accent: oklch(0.93 0.015 20);
-  --accent-foreground: oklch(0.25 0.02 30);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.91 0.008 30);
-  --input: oklch(0.91 0.008 30);
-  --ring: oklch(0.70 0.03 20);
-  --radius: 0.375rem;
+  /* Tengology — Modern Gallery Editorial
+     Warm white canvas, near-black warm ink, a single deep-moss accent.
+     Hairline rules and square frames; photography is the hero. */
+  --background: oklch(0.987 0.003 95);          /* warm white  #FCFBF8 */
+  --foreground: oklch(0.215 0.012 55);          /* warm ink    #1A1714 */
+  --card: oklch(0.987 0.003 95);
+  --card-foreground: oklch(0.215 0.012 55);
+  --popover: oklch(0.995 0.002 95);
+  --popover-foreground: oklch(0.215 0.012 55);
+  --primary: oklch(0.215 0.012 55);             /* solid ink buttons */
+  --primary-foreground: oklch(0.987 0.003 95);
+  --secondary: oklch(0.945 0.006 90);
+  --secondary-foreground: oklch(0.215 0.012 55);
+  --muted: oklch(0.935 0.007 90);               /* stone       #EDEAE3 */
+  --muted-foreground: oklch(0.50 0.012 60);
+  --accent: oklch(0.93 0.014 145);              /* moss tint   #E8ECE5 */
+  --accent-foreground: oklch(0.36 0.05 145);
+  --destructive: oklch(0.50 0.09 35);           /* muted clay  #9C5644 */
+  --border: oklch(0.215 0.012 55 / 12%);        /* hairline ink */
+  --input: oklch(0.215 0.012 55 / 18%);
+  --ring: oklch(0.44 0.055 145);                /* moss focus */
+  --radius: 0rem;                               /* gallery frames are square */
 
-  /* Tengology dusty rose accent */
-  --rose: oklch(0.76 0.06 15);
-  --rose-light: oklch(0.92 0.03 15);
-  --rose-dark: oklch(0.55 0.08 15);
+  /* Deep moss accent family */
+  --moss: oklch(0.44 0.055 145);                /* #4A5D43 */
+  --moss-light: oklch(0.93 0.014 145);          /* #E8ECE5 */
+  --moss-dark: oklch(0.36 0.05 145);
+  --clay: oklch(0.50 0.09 35);
 
-  --chart-1: oklch(0.76 0.06 15);
-  --chart-2: oklch(0.50 0.015 30);
-  --chart-3: oklch(0.40 0.02 30);
-  --chart-4: oklch(0.30 0.02 30);
-  --chart-5: oklch(0.20 0.02 30);
+  --chart-1: oklch(0.44 0.055 145);
+  --chart-2: oklch(0.50 0.012 60);
+  --chart-3: oklch(0.40 0.012 60);
+  --chart-4: oklch(0.30 0.012 60);
+  --chart-5: oklch(0.22 0.012 60);
 
-  --sidebar: oklch(0.98 0.003 60);
-  --sidebar-foreground: oklch(0.18 0.02 30);
-  --sidebar-primary: oklch(0.25 0.02 30);
-  --sidebar-primary-foreground: oklch(0.98 0.005 60);
-  --sidebar-accent: oklch(0.96 0.008 30);
-  --sidebar-accent-foreground: oklch(0.25 0.02 30);
-  --sidebar-border: oklch(0.91 0.008 30);
-  --sidebar-ring: oklch(0.70 0.03 20);
+  --sidebar: oklch(0.975 0.004 95);
+  --sidebar-foreground: oklch(0.215 0.012 55);
+  --sidebar-primary: oklch(0.215 0.012 55);
+  --sidebar-primary-foreground: oklch(0.987 0.003 95);
+  --sidebar-accent: oklch(0.945 0.006 90);
+  --sidebar-accent-foreground: oklch(0.215 0.012 55);
+  --sidebar-border: oklch(0.215 0.012 55 / 12%);
+  --sidebar-ring: oklch(0.44 0.055 145);
 
-  --font-heading: "Cormorant Garamond", serif;
+  --font-heading: "Instrument Serif", Georgia, serif;
+
+  /* Motion */
+  --ease-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-snap: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --duration-reveal: 700ms;
+
+  /* Warm ink-tinted elevation (never grey) */
+  --shadow-soft: 0 8px 30px oklch(0.215 0.012 55 / 0.06);
+  --shadow-lift: 0 12px 40px oklch(0.215 0.012 55 / 0.10);
 }
 
 @layer base {
@@ -106,21 +124,108 @@
   html {
     @apply font-sans;
   }
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
   h1, h2, h3, h4 {
     font-family: var(--font-heading);
+    font-weight: 400; /* Instrument Serif ships a single weight — hierarchy comes from size */
+  }
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+  ::selection {
+    background: var(--moss-light);
   }
 }
 
+@utility eyebrow {
+  font-family: var(--font-sans);
+  font-size: 0.6875rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+
+@utility link-underline {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 0% 1px;
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  transition: background-size 300ms var(--ease-soft);
+  &:hover,
+  &:focus-visible {
+    background-size: 100% 1px;
+  }
+}
+
+@utility no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@utility hairline {
+  border-color: oklch(0.215 0.012 55 / 12%);
+}
+
+@layer components {
+  /* Scroll reveal — driven by the <Reveal> component */
+  [data-reveal] {
+    opacity: 0;
+    transition:
+      opacity var(--duration-reveal) var(--ease-soft),
+      translate var(--duration-reveal) var(--ease-soft);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+  [data-reveal="up"] {
+    translate: 0 16px;
+  }
+  [data-reveal="left"] {
+    translate: -20px 0;
+  }
+  [data-reveal][data-shown="true"] {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+@keyframes badge-pop {
+  0% { scale: 0.6; }
+  60% { scale: 1.3; }
+  100% { scale: 1; }
+}
+
+@keyframes hero-zoom {
+  from { scale: 1.06; }
+  to { scale: 1; }
+}
+
+@keyframes check-draw {
+  from { stroke-dashoffset: 60; }
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
 /* ─── Jewellery designer surfaces ──────────────────────
-   Ported from the crystal designer, retoned from its sage/peacock
-   palette to the Tengology warm neutral + dusty rose accents so the
-   designer reads as the same site as the storefront. */
+   Ported from the crystal designer, retoned to the gallery-editorial
+   warm-white + deep-moss palette so the designer reads as the same
+   site as the storefront. */
 
 /* Soft warm wash sitting behind designer and encyclopedia pages. */
 @utility atelier-wash {
   background-image:
-    linear-gradient(135deg, oklch(0.76 0.06 15 / 0.10) 0%, oklch(0.76 0.06 15 / 0) 34%),
-    linear-gradient(215deg, oklch(0.70 0.03 20 / 0.10) 0%, oklch(0.70 0.03 20 / 0) 42%),
+    linear-gradient(135deg, oklch(0.44 0.055 145 / 0.10) 0%, oklch(0.44 0.055 145 / 0) 34%),
+    linear-gradient(215deg, oklch(0.36 0.05 145 / 0.10) 0%, oklch(0.36 0.05 145 / 0) 42%),
     linear-gradient(180deg, var(--background) 0%, var(--muted) 54%, var(--background) 100%);
 }
 
@@ -130,17 +235,17 @@
   backdrop-filter: blur(12px);
   border: 1px solid var(--border);
   box-shadow:
-    0 1px 2px oklch(0.18 0.02 30 / 0.05),
-    0 10px 26px oklch(0.18 0.02 30 / 0.06);
+    0 1px 2px oklch(0.215 0.012 55 / 0.05),
+    0 10px 26px oklch(0.215 0.012 55 / 0.06);
 }
 
 /* The bead canvas stage: warm radial pools instead of the original
    teal/gold ones, with a faint grid masked to the centre. */
 @utility designer-stage {
   background:
-    radial-gradient(circle at 50% 34%, oklch(0.76 0.06 15 / 0.16), oklch(0.76 0.06 15 / 0) 30%),
-    radial-gradient(circle at 18% 18%, oklch(0.92 0.03 15 / 0.5), oklch(0.92 0.03 15 / 0) 32%),
-    radial-gradient(circle at 84% 74%, oklch(0.70 0.03 20 / 0.14), oklch(0.70 0.03 20 / 0) 34%),
+    radial-gradient(circle at 50% 34%, oklch(0.44 0.055 145 / 0.16), oklch(0.44 0.055 145 / 0) 30%),
+    radial-gradient(circle at 18% 18%, oklch(0.93 0.014 145 / 0.5), oklch(0.93 0.014 145 / 0) 32%),
+    radial-gradient(circle at 84% 74%, oklch(0.36 0.05 145 / 0.14), oklch(0.36 0.05 145 / 0) 34%),
     linear-gradient(180deg, var(--background) 0%, var(--muted) 100%);
 }
 
@@ -150,8 +255,8 @@
   inset: 0;
   pointer-events: none;
   background-image:
-    linear-gradient(oklch(0.18 0.02 30 / 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, oklch(0.18 0.02 30 / 0.035) 1px, transparent 1px);
+    linear-gradient(oklch(0.215 0.012 55 / 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, oklch(0.215 0.012 55 / 0.035) 1px, transparent 1px);
   background-size: 48px 48px;
   mask-image: radial-gradient(circle at center, black 0%, black 42%, transparent 78%);
 }
@@ -165,7 +270,7 @@
     background: transparent;
   }
   &::-webkit-scrollbar-thumb {
-    background: color-mix(in oklab, var(--rose-dark) 40%, transparent);
+    background: color-mix(in oklab, var(--moss-dark) 40%, transparent);
     border-radius: 9999px;
   }
 }
@@ -199,4 +304,19 @@
 
 canvas {
   display: block;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] {
+    opacity: 1 !important;
+    translate: none !important;
+    transition: none !important;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

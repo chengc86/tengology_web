@@ -1,6 +1,5 @@
-"use client";
-
 import Link from "next/link";
+import Image from "next/image";
 import { formatPrice } from "@/lib/format";
 
 interface ProductCardProps {
@@ -12,6 +11,10 @@ interface ProductCardProps {
   category?: string;
 }
 
+/**
+ * Exhibit card: square frame, hairline, then title and price sharing a
+ * baseline — product photography carries the page, the caption stays quiet.
+ */
 export function ProductCard({
   slug,
   title,
@@ -21,30 +24,37 @@ export function ProductCard({
 }: ProductCardProps) {
   return (
     <Link href={`/product/${slug}`} className="group block">
-      <div className="aspect-square overflow-hidden bg-muted rounded-sm">
+      <div className="relative aspect-square overflow-hidden bg-muted">
         {image ? (
-          <img
+          <Image
             src={image}
             alt={title}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+            fill
+            sizes="(max-width: 768px) 50vw, 25vw"
+            className="object-cover transition-transform duration-700 motion-safe:group-hover:scale-105"
+            style={{ transitionTimingFunction: "var(--ease-soft)" }}
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-muted-foreground/30">
+          <div className="flex h-full w-full items-center justify-center text-muted-foreground/30">
             <span className="font-heading text-4xl">T</span>
           </div>
         )}
       </div>
-      <div className="mt-3 space-y-1">
-        <h3 className="text-sm font-medium leading-tight group-hover:text-rose-dark transition-colors">
-          {title}
-        </h3>
-        <div className="flex items-center gap-2">
-          <span className="text-sm">{formatPrice(price)}</span>
+      <div className="mt-4 flex items-baseline justify-between gap-3 border-t pt-3">
+        <h3 className="font-heading text-lg leading-tight">{title}</h3>
+        <div className="flex shrink-0 items-baseline gap-2">
           {compareAtPrice && (
             <span className="text-xs text-muted-foreground line-through">
               {formatPrice(compareAtPrice)}
             </span>
           )}
+          <span
+            className={
+              compareAtPrice ? "text-sm text-moss-dark" : "text-sm tabular-nums"
+            }
+          >
+            {formatPrice(price)}
+          </span>
         </div>
       </div>
     </Link>

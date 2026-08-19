@@ -33,12 +33,20 @@ interface CartState {
   clearCart: () => void;
   totalItems: () => number;
   totalPrice: () => number;
+  /** Cart drawer visibility — UI state, deliberately not persisted. */
+  isOpen: boolean;
+  openCart: () => void;
+  closeCart: () => void;
 }
 
 export const useCartStore = create<CartState>()(
   persist(
     (set, get) => ({
       items: [],
+      isOpen: false,
+
+      openCart: () => set({ isOpen: true }),
+      closeCart: () => set({ isOpen: false }),
 
       addItem: (item, quantity = 1) => {
         const { items } = get();
@@ -81,6 +89,10 @@ export const useCartStore = create<CartState>()(
       totalPrice: () =>
         get().items.reduce((sum, i) => sum + i.price * i.quantity, 0),
     }),
-    { name: "tengology-cart" }
+    {
+      name: "tengology-cart",
+      // Only the contents survive a reload; drawer visibility must not.
+      partialize: (state) => ({ items: state.items }),
+    }
   )
 );

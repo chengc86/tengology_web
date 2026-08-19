@@ -21,10 +21,10 @@ export default function AboutPage() {
           className="object-cover opacity-25"
         />
         <div className="relative mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-20 lg:py-32 text-center">
-          <p className="text-xs tracking-[0.3em] uppercase text-muted-foreground mb-4">
+          <p className="eyebrow mb-5">
             The Story
           </p>
-          <h1 className="font-heading text-4xl lg:text-6xl font-light leading-[1.15]">
+          <h1 className="font-heading text-6xl leading-[0.92] sm:text-7xl lg:text-8xl">
             Where texture
             <br />
             meets <span className="italic">energy</span>
@@ -58,13 +58,13 @@ export default function AboutPage() {
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
           <div className="grid lg:grid-cols-5 gap-10 lg:gap-16 items-start">
             <div className="lg:col-span-2">
-              <p className="text-xs tracking-[0.3em] uppercase text-muted-foreground mb-3">
+              <p className="eyebrow mb-4">
                 Chapter One
               </p>
-              <h2 className="font-heading text-3xl lg:text-4xl font-light mb-6">
+              <h2 className="font-heading text-4xl leading-[0.95] mb-6 lg:text-5xl">
                 The wool felt years
               </h2>
-              <div className="relative aspect-[3/4] rounded-sm overflow-hidden">
+              <div className="relative aspect-[3/4]  overflow-hidden">
                 <Image
                   src="/lookbook/felt-flower-headband-portrait.jpg"
                   alt="A girl in a garden wearing a handmade wool felt flower headband"
@@ -108,13 +108,13 @@ export default function AboutPage() {
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
           <div className="grid lg:grid-cols-5 gap-10 lg:gap-16 items-start">
             <div className="lg:col-span-2">
-              <p className="text-xs tracking-[0.3em] uppercase text-muted-foreground mb-3">
+              <p className="eyebrow mb-4">
                 Chapter Two
               </p>
-              <h2 className="font-heading text-3xl lg:text-4xl font-light mb-6">
+              <h2 className="font-heading text-4xl leading-[0.95] mb-6 lg:text-5xl">
                 Discovering crystals
               </h2>
-              <div className="relative aspect-[3/4] rounded-sm overflow-hidden">
+              <div className="relative aspect-[3/4]  overflow-hidden">
                 <Image
                   src="/Gemini_Generated_Image_6rl2h86rl2h86rl2.png"
                   alt="Amethyst geode with deep purple crystal formations and scattered crystal beads on linen"
@@ -170,13 +170,13 @@ export default function AboutPage() {
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
           <div className="grid lg:grid-cols-5 gap-10 lg:gap-16 items-start">
             <div className="lg:col-span-2">
-              <p className="text-xs tracking-[0.3em] uppercase text-muted-foreground mb-3">
+              <p className="eyebrow mb-4">
                 Chapter Three
               </p>
-              <h2 className="font-heading text-3xl lg:text-4xl font-light mb-6">
+              <h2 className="font-heading text-4xl leading-[0.95] mb-6 lg:text-5xl">
                 Batik &amp; belonging
               </h2>
-              <div className="relative aspect-[3/4] rounded-sm overflow-hidden">
+              <div className="relative aspect-[3/4]  overflow-hidden">
                 <Image
                   src="/Gemini_Generated_Image_8786gl8786gl8786.png"
                   alt="Vibrant Indonesian batik fabric with bold floral patterns and handmade batik earrings"
@@ -222,15 +222,15 @@ export default function AboutPage() {
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
           <div className="grid lg:grid-cols-5 gap-10 lg:gap-16 items-start">
             <div className="lg:col-span-2">
-              <p className="text-xs tracking-[0.3em] uppercase text-muted-foreground mb-3">
+              <p className="eyebrow mb-4">
                 Chapter Four
               </p>
-              <h2 className="font-heading text-3xl lg:text-4xl font-light mb-6">
+              <h2 className="font-heading text-4xl leading-[0.95] mb-6 lg:text-5xl">
                 My father&rsquo;s
                 <br />
                 <span className="italic">glass</span>
               </h2>
-              <div className="relative aspect-[3/4] rounded-sm overflow-hidden">
+              <div className="relative aspect-[3/4]  overflow-hidden">
                 <Image
                   src="/Gemini_Generated_Image_9yivvq9yivvq9yiv.png"
                   alt="Sunlight streaming through begonia-patterned stained glass with handmade glass earrings and pendants"
@@ -273,10 +273,10 @@ export default function AboutPage() {
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
           <div className="grid lg:grid-cols-5 gap-10 lg:gap-16 items-start">
             <div className="lg:col-span-2">
-              <p className="text-xs tracking-[0.3em] uppercase text-muted-foreground mb-3">
+              <p className="eyebrow mb-4">
                 The Thread
               </p>
-              <h2 className="font-heading text-3xl lg:text-4xl font-light">
+              <h2 className="font-heading text-4xl leading-[0.95] lg:text-5xl">
                 What connects
                 <br />
                 <span className="italic">everything</span>
@@ -316,12 +316,12 @@ export default function AboutPage() {
       {/* Values */}
       <section className="border-t bg-muted/30">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
-          <h2 className="font-heading text-3xl font-light text-center mb-12">
+          <h2 className="font-heading text-4xl leading-[0.95] text-center mb-12 lg:text-5xl">
             What I believe in
           </h2>
           <div className="grid sm:grid-cols-2 gap-8 lg:gap-12">
             <div>
-              <h3 className="text-xs tracking-[0.2em] uppercase font-medium mb-3">
+              <h3 className="eyebrow mb-4 !text-foreground">
                 Natural Materials
               </h3>
               <p className="text-sm text-muted-foreground leading-relaxed">
@@ -331,7 +331,7 @@ export default function AboutPage() {
               </p>
             </div>
             <div>
-              <h3 className="text-xs tracking-[0.2em] uppercase font-medium mb-3">
+              <h3 className="eyebrow mb-4 !text-foreground">
                 Intention
               </h3>
               <p className="text-sm text-muted-foreground leading-relaxed">
@@ -341,7 +341,7 @@ export default function AboutPage() {
               </p>
             </div>
             <div>
-              <h3 className="text-xs tracking-[0.2em] uppercase font-medium mb-3">
+              <h3 className="eyebrow mb-4 !text-foreground">
                 Energy
               </h3>
               <p className="text-sm text-muted-foreground leading-relaxed">
@@ -351,7 +351,7 @@ export default function AboutPage() {
               </p>
             </div>
             <div>
-              <h3 className="text-xs tracking-[0.2em] uppercase font-medium mb-3">
+              <h3 className="eyebrow mb-4 !text-foreground">
                 Craftsmanship
               </h3>
               <p className="text-sm text-muted-foreground leading-relaxed">
@@ -368,7 +368,7 @@ export default function AboutPage() {
       {/* CTA */}
       <section className="border-t">
         <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-16 lg:py-24 text-center">
-          <h2 className="font-heading text-3xl lg:text-4xl font-light mb-6">
+          <h2 className="font-heading text-4xl leading-[0.95] mb-6 lg:text-5xl">
             Come and see for yourself
           </h2>
           <p className="text-muted-foreground leading-relaxed mb-8 max-w-lg mx-auto">
