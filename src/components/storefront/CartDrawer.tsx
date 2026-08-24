@@ -26,7 +26,7 @@ export function CartDrawer() {
         <Button
           asChild
           onClick={closeCart}
-          className="mt-8 text-xs uppercase tracking-[0.2em]"
+          className="mt-8 rounded-none text-xs uppercase tracking-[0.2em]"
         >
           <Link href="/shop">Browse the shop</Link>
         </Button>
@@ -157,7 +157,7 @@ export function CartDrawer() {
         <Button
           asChild
           onClick={closeCart}
-          className="h-12 w-full text-xs uppercase tracking-[0.2em]"
+          className="h-12 w-full rounded-none text-xs uppercase tracking-[0.2em]"
         >
           <Link href="/checkout">Checkout</Link>
         </Button>

@@ -88,7 +88,7 @@ export function EncyclopediaFilters({ crystals }: { crystals: Crystal[] }) {
 
   return (
     <>
-      <div className="mb-6 rounded-lg border border-border bg-card/76 p-3 shadow-sm backdrop-blur-sm sm:p-4">
+      <div className="mb-6 border bg-card/76 p-3 sm:p-4">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <div className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">Filter</div>
@@ -103,7 +103,7 @@ export function EncyclopediaFilters({ crystals }: { crystals: Crystal[] }) {
                 setMaterialType(null);
                 setQuery('');
               }}
-              className="inline-flex h-10 w-fit items-center gap-2 rounded-lg border border-border bg-card px-3 text-sm font-medium text-muted-foreground transition hover:border-rose hover:text-foreground"
+              className="inline-flex h-10 w-fit items-center gap-2 border px-3 text-sm text-muted-foreground transition hover:border-foreground hover:text-foreground"
             >
               <X className="h-4 w-4" />
               Clear
@@ -117,13 +117,13 @@ export function EncyclopediaFilters({ crystals }: { crystals: Crystal[] }) {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search crystals..."
-            className="h-12 w-full rounded-lg border border-border bg-card pl-10 pr-3 text-base shadow-sm outline-none transition focus:border-rose focus:ring-2 focus:ring-rose/20 sm:text-sm"
+            className="h-12 w-full border bg-background pl-10 pr-3 text-base outline-none transition focus:border-foreground sm:text-sm"
           />
         </label>
 
         <div className="mt-4">
           <div className="mb-2 flex items-center gap-2 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-            <Gem className="h-3.5 w-3.5 text-rose-dark" />
+            <Gem className="h-3.5 w-3.5 text-moss" />
             Stone type
           </div>
           <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -134,10 +134,10 @@ export function EncyclopediaFilters({ crystals }: { crystals: Crystal[] }) {
                   key={type.id}
                   onClick={() => setMaterialType(active ? null : type.id)}
                   className={cn(
-                    'rounded-lg border px-3 py-3 text-left transition-colors',
+                    'border px-3 py-3 text-left transition-colors',
                     active
-                      ? 'border-rose-dark bg-rose-dark text-white'
-                      : 'border-border bg-card/72 text-muted-foreground hover:border-rose hover:bg-muted hover:text-foreground',
+                      ? 'border-foreground bg-foreground text-background'
+                      : 'border-border bg-card/72 text-muted-foreground hover:border-foreground hover:bg-muted hover:text-foreground',
                   )}
                 >
                   <span className="flex items-center justify-between gap-3">
@@ -160,7 +160,7 @@ export function EncyclopediaFilters({ crystals }: { crystals: Crystal[] }) {
         {filtered.map((c) => <CrystalCard key={c.slug} crystal={c} />)}
       </div>
       {filtered.length === 0 && (
-        <div className="rounded-lg border border-border bg-card/72 py-12 text-center text-sm text-muted-foreground">
+        <div className="border-t py-12 text-center text-sm text-muted-foreground">
           No crystals match these filters.
         </div>
       )}

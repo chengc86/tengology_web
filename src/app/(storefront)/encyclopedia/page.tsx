@@ -21,19 +21,19 @@ export default function EncyclopediaPage() {
       {/* Image-backed hero. The scrim is warm (Tengology's foreground brown)
           rather than the original cool near-black, so it sits with the rest
           of the site. Nav lives in the storefront header above. */}
-      <section className="relative isolate overflow-hidden bg-[#1a0e0c] text-white">
+      <section className="relative isolate overflow-hidden bg-foreground text-background">
         <img
           src="/lookbook/encyclopedia-library-ai.jpg"
           alt=""
           className="absolute inset-0 h-full w-full object-cover opacity-[0.44]"
           loading="eager"
         />
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(26,14,12,0.95)_0%,rgba(26,14,12,0.84)_46%,rgba(26,14,12,0.56)_100%)]" />
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(26,14,12,0.12)_0%,rgba(26,14,12,0.16)_54%,rgba(26,14,12,0.70)_100%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,oklch(0.215_0.012_55/0.92)_0%,oklch(0.215_0.012_55/0.78)_46%,oklch(0.215_0.012_55/0.48)_100%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,oklch(0.215_0.012_55/0.10)_0%,oklch(0.215_0.012_55/0.14)_54%,oklch(0.215_0.012_55/0.62)_100%)]" />
         <div className="relative z-10 mx-auto max-w-7xl px-4 pb-10 pt-3 sm:px-6 sm:pb-12 sm:pt-4">
           <header className="grid gap-8 py-12 sm:py-16 lg:grid-cols-[minmax(0,1fr)_380px] lg:items-end">
             <div className="min-w-0 max-w-3xl">
-              <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.22em] text-[#d5a2a5]">
+              <p className="eyebrow inline-flex items-center gap-2 !text-background/70">
                 <BookOpen className="h-3.5 w-3.5" />
                 Stone library
               </p>
@@ -45,7 +45,7 @@ export default function EncyclopediaPage() {
               </p>
             </div>
 
-            <div className="grid min-w-0 grid-cols-3 gap-px overflow-hidden rounded-lg border border-white/16 bg-card/16 text-white backdrop-blur-sm">
+            <div className="grid min-w-0 grid-cols-3 gap-px overflow-hidden border border-white/16 bg-card/16 text-white backdrop-blur-sm">
               <Metric value={crystals.length} label="stones" />
               <Metric value={colorCount} label="colors" />
               <Metric value={intentionCount} label="intentions" />
@@ -79,7 +79,7 @@ export default function EncyclopediaPage() {
           </div>
           <Link
             href="/designer/bracelet"
-            className="inline-flex h-11 w-fit items-center gap-2 rounded-lg border border-border bg-card px-4 text-sm font-semibold text-foreground shadow-sm transition hover:border-rose hover:bg-muted"
+            className="eyebrow inline-flex h-11 w-fit items-center gap-2 border border-foreground px-4 text-foreground transition hover:bg-foreground hover:text-background"
           >
             Open studio
             <ArrowRight className="h-4 w-4" />
@@ -94,7 +94,7 @@ export default function EncyclopediaPage() {
 
 function Metric({ value, label }: { value: number; label: string }) {
   return (
-    <div className="min-w-0 bg-[#1a0e0c]/58 px-3 py-4 sm:px-4">
+    <div className="min-w-0 bg-foreground/50 px-3 py-4 sm:px-4">
       <div className="font-heading text-3xl leading-none">{value}</div>
       <div className="mt-1 truncate text-[10px] font-semibold uppercase tracking-[0.14em] text-white/56 sm:tracking-[0.18em]">{label}</div>
     </div>
@@ -112,7 +112,7 @@ function VisualStory({
 }) {
   return (
     <article className="group">
-      <div className="relative overflow-hidden rounded-lg border border-border bg-[#1a0e0c] shadow-sm">
+      <div className="relative overflow-hidden bg-foreground">
         <img
           src={image}
           alt=""
@@ -120,10 +120,10 @@ function VisualStory({
           decoding="async"
           className="aspect-[16/11] w-full object-cover transition duration-500 group-hover:scale-[1.02] sm:aspect-[16/8] lg:aspect-[16/6]"
         />
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(26,14,12,0.84)_0%,rgba(26,14,12,0.48)_52%,rgba(26,14,12,0.18)_100%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,oklch(0.215_0.012_55/0.78)_0%,oklch(0.215_0.012_55/0.40)_52%,oklch(0.215_0.012_55/0.12)_100%)]" />
         <div className="absolute inset-x-0 bottom-0 p-4 text-white sm:p-6">
           <div className="max-w-xl">
-            <div className="text-xs font-semibold uppercase tracking-[0.22em] text-[#d5a2a5]">Material archive</div>
+            <div className="eyebrow !text-background/70">Material archive</div>
             <div className="mt-2 font-heading text-3xl leading-none sm:text-4xl">{title}</div>
             <p className="mt-3 max-w-md text-sm leading-relaxed text-white/76 sm:text-base">{body}</p>
           </div>

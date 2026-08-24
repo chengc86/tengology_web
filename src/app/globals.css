@@ -133,6 +133,9 @@
     font-family: var(--font-heading);
     font-weight: 400; /* Instrument Serif ships a single weight — hierarchy comes from size */
   }
+  h1 em, h2 em, h3 em {
+    font-style: italic;
+  }
   :focus-visible {
     outline: 2px solid var(--ring);
     outline-offset: 2px;

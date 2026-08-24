@@ -41,7 +41,9 @@ export function ProductCard({
         )}
       </div>
       <div className="mt-4 flex items-baseline justify-between gap-3 border-t pt-3">
-        <h3 className="font-heading text-lg leading-tight">{title}</h3>
+        <h3 className="font-heading text-lg leading-tight transition-colors group-hover:text-moss-dark">
+          {title}
+        </h3>
         <div className="flex shrink-0 items-baseline gap-2">
           {compareAtPrice && (
             <span className="text-xs text-muted-foreground line-through">

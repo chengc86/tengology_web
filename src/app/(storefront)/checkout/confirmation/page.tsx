@@ -31,7 +31,7 @@ export default async function ConfirmationPage({
     return (
       <div className="mx-auto max-w-xl px-4 py-24 text-center">
         <CheckCircle2 className="mx-auto mb-6 h-12 w-12 text-emerald-600" />
-        <h1 className="mb-3 font-heading text-3xl font-light">Thank you for your order</h1>
+        <h1 className="mb-3 font-heading text-4xl leading-[0.95]">Thank you for your order</h1>
         <p className="mb-8 leading-relaxed text-muted-foreground">
           Order <span className="font-mono">{params.order}</span> is confirmed. We&apos;ve emailed
           your receipt.
@@ -51,7 +51,7 @@ export default async function ConfirmationPage({
     <div className="mx-auto max-w-2xl px-4 py-14 sm:px-6 lg:py-20">
       <div className="mb-10 text-center">
         <CheckCircle2 className="mx-auto mb-5 h-12 w-12 text-emerald-600" />
-        <h1 className="mb-2 font-heading text-3xl font-light">Thank you, {address?.firstName ?? "friend"}</h1>
+        <h1 className="mb-2 font-heading text-4xl leading-[0.95]">Thank you, {address?.firstName ?? "friend"}</h1>
         <p className="text-muted-foreground">
           Your order <span className="font-mono text-foreground">{order.orderNumber}</span> is
           confirmed.

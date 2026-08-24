@@ -41,7 +41,7 @@ export function AddToCartButton({
     <Button
       onClick={handleAdd}
       disabled={!inStock}
-      className="h-12 w-full text-xs uppercase tracking-[0.2em]"
+      className="h-12 w-full rounded-none text-xs uppercase tracking-[0.2em]"
       size="lg"
     >
       {!inStock ? (

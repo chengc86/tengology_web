@@ -13,8 +13,9 @@ import { cn } from "@/lib/utils";
 const navigation = [
   { name: "Shop", href: "/shop" },
   { name: "Design Your Own", href: "/designer/bracelet" },
+  { name: "Story", href: "/pages/about" },
   { name: "Jewellery", href: "/shop?category=JEWELLERY" },
-  { name: "Hair Accessories", href: "/shop?category=HAIR_ACCESSORIES" },
+  { name: "Hair", href: "/shop?category=HAIR_ACCESSORIES" },
   { name: "Christmas", href: "/shop?category=CHRISTMAS_ORNAMENTS" },
   { name: "Crystal Guide", href: "/encyclopedia" },
 ];
@@ -145,13 +146,15 @@ export function Header() {
             </Link>
 
             {!isCheckout ? (
-              <nav className="hidden items-center gap-7 lg:flex">
+              <nav className="hidden items-center gap-5 xl:gap-7 lg:flex">
                 {navigation.map((item) => {
+                  const path = item.href.split("?")[0];
                   const active =
                     item.href === "/shop"
                       ? pathname === "/shop"
-                      : pathname.startsWith(item.href.split("?")[0]) &&
-                        item.href.split("?")[0] !== "/shop";
+                      : path === "/pages/about"
+                        ? pathname.startsWith("/pages/about")
+                        : pathname.startsWith(path) && path !== "/shop";
                   return (
                     <Link
                       key={item.name}

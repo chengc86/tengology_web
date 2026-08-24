@@ -17,9 +17,7 @@ export function AccountNav() {
 
   return (
     <nav className="lg:sticky lg:top-28 lg:self-start">
-      <p className="mb-4 hidden text-xs font-medium uppercase tracking-[0.15em] text-muted-foreground lg:block">
-        My account
-      </p>
+      <p className="eyebrow mb-4 hidden lg:block">My account</p>
       <ul className="flex gap-1 overflow-x-auto border-b pb-2 lg:flex-col lg:gap-0.5 lg:border-0 lg:pb-0">
         {links.map((link) => {
           const active = link.exact ? pathname === link.href : pathname.startsWith(link.href);

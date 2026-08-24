@@ -4,34 +4,30 @@ import { prisma } from "@/lib/db";
 import { ProductCard } from "@/components/storefront/ProductCard";
 import { Reveal } from "@/components/storefront/Reveal";
 import { SectionHeading } from "@/components/storefront/SectionHeading";
+import { StorefrontCta } from "@/components/storefront/StorefrontCta";
+import { homeCollections } from "@/lib/storefront";
 
 // Revalidate via ISR: the home page shows DB-driven featured products.
 export const revalidate = 60;
 
-const collections = [
+const materials = [
   {
-    name: "Hair Accessories",
-    href: "/shop?category=HAIR_ACCESSORIES",
-    description: "Handcrafted clips, barrettes & headbands",
+    name: "Wool felt",
+    copy: "Soft, honest, and warm between the fingers.",
     image: "/lookbook/felt-flower-headband-portrait.jpg",
+    alt: "A girl in a garden wearing a handmade wool felt flower headband",
   },
   {
-    name: "Jewellery",
-    href: "/shop?category=JEWELLERY",
-    description: "Unique earrings, rings & necklaces",
-    image: "/Gemini_Generated_Image_ukw8ilukw8ilukw8.png",
+    name: "Crystal",
+    copy: "Chosen for colour, energy, and feel against the skin.",
+    image: "/lookbook/howlite-worn-1.jpg",
+    alt: "Howlite crystal bracelets stacked on a wrist",
   },
   {
-    name: "Christmas",
-    href: "/shop?category=CHRISTMAS_ORNAMENTS",
-    description: "Festive ornaments & decorations",
+    name: "Wood & brass",
+    copy: "Natural materials, finished by hand in Oxford.",
     image: "/lookbook/felt-sprout-ornaments-pair.jpg",
-  },
-  {
-    name: "Brooches",
-    href: "/shop?category=BROOCHES",
-    description: "Statement brooches & pins",
-    image: "/Gemini_Generated_Image_9wvh4a9wvh4a9wvh.png",
+    alt: "A pair of handmade wool felt sprout ornaments with brass bells",
   },
 ];
 
@@ -52,56 +48,52 @@ export default async function HomePage() {
 
   return (
     <div>
-      {/* Hero */}
-      <section className="relative overflow-hidden bg-muted">
-        <Image
-          src="/lookbook/felt-flower-headbands-garden.jpg"
-          alt="Two girls lying in the grass wearing handmade wool felt flower headbands"
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover opacity-30 motion-safe:animate-[hero-zoom_14s_var(--ease-soft)_forwards]"
-        />
-        <div className="relative mx-auto max-w-7xl px-4 py-28 sm:px-6 lg:px-8 lg:py-44">
-          <div className="max-w-3xl">
-            <p
-              className="eyebrow mb-6 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-4 motion-safe:fill-mode-both motion-safe:duration-700"
-              style={{ animationDelay: "0ms" }}
-            >
-              Designed &amp; Made in Oxford
-            </p>
-            <h1
-              className="font-heading text-6xl leading-[0.92] motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-4 motion-safe:fill-mode-both motion-safe:duration-700 sm:text-7xl lg:text-8xl"
-              style={{ animationDelay: "90ms" }}
-            >
-              Made with
-              <br />
-              <em>intention</em>
-            </h1>
-            <p
-              className="mt-8 max-w-md leading-relaxed text-muted-foreground motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-4 motion-safe:fill-mode-both motion-safe:duration-700"
-              style={{ animationDelay: "180ms" }}
-            >
-              Every piece is designed and handmade in Oxford using wool felt,
-              wood, and natural materials. Made to be treasured.
-            </p>
-            <div
-              className="mt-10 flex flex-wrap gap-3 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-4 motion-safe:fill-mode-both motion-safe:duration-700"
-              style={{ animationDelay: "270ms" }}
-            >
-              <Link
-                href="/shop"
-                className="eyebrow inline-flex items-center border border-foreground bg-foreground px-8 py-4 !text-background transition-colors hover:bg-transparent hover:!text-foreground"
+      {/* Hero — split so the photograph stays visible, not washed out */}
+      <section className="border-b">
+        <div className="grid lg:grid-cols-2">
+          <div className="flex flex-col justify-center px-4 py-16 sm:px-6 lg:px-12 lg:py-28 xl:px-20">
+            <div className="mx-auto w-full max-w-xl lg:mx-0">
+              <p
+                className="eyebrow mb-6 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-4 motion-safe:fill-mode-both motion-safe:duration-700"
+                style={{ animationDelay: "0ms" }}
               >
-                Shop the collection
-              </Link>
-              <Link
-                href="/designer/bracelet"
-                className="eyebrow inline-flex items-center border px-8 py-4 !text-foreground transition-colors hover:border-foreground"
+                Designed &amp; Made in Oxford
+              </p>
+              <h1
+                className="font-heading text-6xl leading-[0.92] motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-4 motion-safe:fill-mode-both motion-safe:duration-700 sm:text-7xl lg:text-8xl"
+                style={{ animationDelay: "90ms" }}
               >
-                Design your own
-              </Link>
+                Made with
+                <br />
+                <em>intention</em>
+              </h1>
+              <p
+                className="mt-8 max-w-md leading-relaxed text-muted-foreground motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-4 motion-safe:fill-mode-both motion-safe:duration-700"
+                style={{ animationDelay: "180ms" }}
+              >
+                Every piece is designed and handmade in Oxford using wool felt,
+                wood, and natural materials. Made to be treasured.
+              </p>
+              <div
+                className="mt-10 flex flex-wrap gap-3 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-4 motion-safe:fill-mode-both motion-safe:duration-700"
+                style={{ animationDelay: "270ms" }}
+              >
+                <StorefrontCta href="/shop">Shop the collection</StorefrontCta>
+                <StorefrontCta href="/designer/bracelet" variant="outline">
+                  Design your own
+                </StorefrontCta>
+              </div>
             </div>
+          </div>
+          <div className="relative min-h-[52vw] bg-muted sm:min-h-[420px] lg:min-h-[36rem] xl:min-h-[40rem]">
+            <Image
+              src="/lookbook/felt-flower-headbands-garden.jpg"
+              alt="Two girls lying in the grass wearing handmade wool felt flower headbands"
+              fill
+              priority
+              sizes="(max-width: 1024px) 100vw, 50vw"
+              className="object-cover object-[center_35%] motion-safe:animate-[hero-zoom_14s_var(--ease-soft)_forwards]"
+            />
           </div>
         </div>
       </section>
@@ -110,27 +102,25 @@ export default async function HomePage() {
       <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-32">
         <SectionHeading index="01" eyebrow="Shop by craft" title="Collections" />
         <div className="mt-12 grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-6">
-          {collections.map((col, i) => (
+          {homeCollections.map((col, i) => (
             <Reveal key={col.name} delay={i * 80}>
               <Link
                 href={col.href}
-                className="group relative flex aspect-[3/4] items-end overflow-hidden bg-muted p-6"
+                className="group relative flex aspect-[3/4] items-end overflow-hidden bg-muted"
               >
-                {col.image && (
-                  <Image
-                    src={col.image}
-                    alt={col.name}
-                    fill
-                    sizes="(max-width: 1024px) 50vw, 25vw"
-                    className="object-cover transition-transform duration-700 motion-safe:group-hover:scale-105"
-                    style={{ transitionTimingFunction: "var(--ease-soft)" }}
-                  />
-                )}
-                <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
+                <Image
+                  src={col.image}
+                  alt={col.name}
+                  fill
+                  sizes="(max-width: 1024px) 50vw, 25vw"
+                  className="object-cover transition-transform duration-700 motion-safe:group-hover:scale-105"
+                  style={{ transitionTimingFunction: "var(--ease-soft)" }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
                 <span className="eyebrow absolute right-5 top-5 z-10">
                   0{i + 1}
                 </span>
-                <div className="relative z-10">
+                <div className="relative z-10 p-5 lg:p-6">
                   <h3 className="font-heading text-xl leading-tight lg:text-2xl">
                     {col.name}
                   </h3>
@@ -187,16 +177,53 @@ export default async function HomePage() {
         </section>
       )}
 
+      {/* Materials */}
+      <section className="border-y bg-muted/35">
+        <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
+          <SectionHeading
+            index={featuredProducts.length > 0 ? "03" : "02"}
+            eyebrow="In the hand"
+            title="Materials we work with"
+          />
+          <div className="mt-12 grid gap-4 sm:grid-cols-3 lg:gap-6">
+            {materials.map((material, i) => (
+              <Reveal key={material.name} delay={i * 80}>
+                <figure className="group">
+                  <div className="relative aspect-[4/5] overflow-hidden bg-muted">
+                    <Image
+                      src={material.image}
+                      alt={material.alt}
+                      fill
+                      sizes="(max-width: 640px) 100vw, 33vw"
+                      className="object-cover transition-transform duration-700 motion-safe:group-hover:scale-105"
+                      style={{ transitionTimingFunction: "var(--ease-soft)" }}
+                    />
+                  </div>
+                  <figcaption className="mt-4 border-t pt-3">
+                    <h3 className="font-heading text-2xl leading-tight">
+                      {material.name}
+                    </h3>
+                    <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                      {material.copy}
+                    </p>
+                  </figcaption>
+                </figure>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Story teaser */}
       <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-32">
         <SectionHeading
-          index="03"
+          index={featuredProducts.length > 0 ? "04" : "03"}
           eyebrow="The maker"
           title="Every piece tells a story"
         />
         <div className="mt-12 grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
           <Reveal variant="left">
-            <div className="relative aspect-[4/3] overflow-hidden bg-muted">
+            <div className="relative aspect-[4/5] overflow-hidden bg-muted sm:aspect-[4/3]">
               <Image
                 src="/lookbook/felt-sprout-ornaments-wreath.jpg"
                 alt="Hand-stitched wool felt sprout ornaments with brass bells, arranged on a willow wreath"
@@ -213,12 +240,14 @@ export default async function HomePage() {
                 Tengology creation is made by hand with attention to every
                 detail.
               </p>
-              <Link
-                href="/pages/about"
-                className="eyebrow mt-8 inline-flex border border-foreground px-8 py-4 !text-foreground transition-colors hover:bg-foreground hover:!text-background"
-              >
+              <p className="mt-5 max-w-lg leading-relaxed text-muted-foreground">
+                Wool felt is the warmth found in England. Crystals are the
+                earth&rsquo;s quiet energy. Every piece is designed to be felt
+                as much as it is seen.
+              </p>
+              <StorefrontCta href="/pages/about" variant="outline" className="mt-8">
                 Our story
-              </Link>
+              </StorefrontCta>
             </div>
           </Reveal>
         </div>

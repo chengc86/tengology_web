@@ -88,10 +88,12 @@ export default function CartPage() {
   if (items.length === 0) {
     return (
       <div className="mx-auto max-w-3xl px-4 py-24 text-center sm:px-6 lg:px-8">
-        <ShoppingBag className="mx-auto mb-6 h-12 w-12 text-muted-foreground/40" />
-        <h1 className="mb-3 font-heading text-3xl font-light">Your bag is empty</h1>
-        <p className="mb-8 text-muted-foreground">Discover something special.</p>
-        <Button asChild className="text-xs uppercase tracking-[0.15em]">
+        <p className="eyebrow mb-4">Your bag</p>
+        <h1 className="mb-3 font-heading text-4xl leading-[0.95]">
+          Your bag is <em>empty</em>
+        </h1>
+        <p className="mb-8 text-muted-foreground">Discover something made by hand.</p>
+        <Button asChild className="rounded-none text-xs uppercase tracking-[0.15em]">
           <Link href="/shop">Continue shopping</Link>
         </Button>
       </div>
@@ -103,7 +105,8 @@ export default function CartPage() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6 lg:px-8 lg:py-16">
-      <h1 className="mb-8 font-heading text-3xl font-light lg:text-4xl">Your bag</h1>
+      <p className="eyebrow mb-3">Your bag</p>
+      <h1 className="mb-8 font-heading text-4xl leading-[0.95] lg:text-5xl">Your bag</h1>
 
       {quote?.issues.map((issue) => (
         <div
@@ -121,8 +124,8 @@ export default function CartPage() {
             <p className="mb-2 text-xs text-muted-foreground">
               Spend {formatMoney(remaining)} more for free delivery
             </p>
-            <div className="h-1 overflow-hidden rounded-full bg-muted">
-              <div className="h-full bg-foreground transition-all" style={{ width: `${progress}%` }} />
+            <div className="h-px overflow-hidden bg-muted">
+              <div className="h-full bg-moss transition-all" style={{ width: `${progress}%` }} />
             </div>
           </>
         ) : (
@@ -142,7 +145,7 @@ export default function CartPage() {
 
           return (
             <div key={key} className="flex gap-4 border-b pb-6">
-              <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-sm bg-muted">
+              <div className="relative h-24 w-24 shrink-0 overflow-hidden bg-muted">
                 {item.image ? (
                   <Image src={item.image} alt={item.title} fill sizes="96px" className="object-cover" />
                 ) : (
@@ -215,10 +218,10 @@ export default function CartPage() {
         <p className="text-xs text-muted-foreground">
           Delivery and any discount codes are applied at checkout.
         </p>
-        <Button asChild className="h-12 w-full text-xs uppercase tracking-[0.2em]">
+        <Button asChild className="h-12 w-full rounded-none text-xs uppercase tracking-[0.2em]">
           <Link href="/checkout">Proceed to checkout</Link>
         </Button>
-        <Button asChild variant="outline" className="w-full text-xs uppercase tracking-[0.15em]">
+        <Button asChild variant="outline" className="w-full rounded-none text-xs uppercase tracking-[0.15em]">
           <Link href="/shop">Continue shopping</Link>
         </Button>
       </div>

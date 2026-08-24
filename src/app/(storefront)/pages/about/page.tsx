@@ -1,6 +1,7 @@
-import Link from "next/link";
 import Image from "next/image";
 import type { Metadata } from "next";
+import { PageHero } from "@/components/storefront/PageHero";
+import { StorefrontCta } from "@/components/storefront/StorefrontCta";
 
 export const metadata: Metadata = {
   title: "About",
@@ -11,26 +12,18 @@ export const metadata: Metadata = {
 export default function AboutPage() {
   return (
     <div>
-      {/* Hero */}
-      <section className="relative bg-muted overflow-hidden">
-        <Image
-          src="/Gemini_Generated_Image_padxvnpadxvnpadx.png"
-          alt="Layered natural textures — wool felt, crystal, batik fabric, and stained glass"
-          fill
-          priority
-          className="object-cover opacity-25"
-        />
-        <div className="relative mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-20 lg:py-32 text-center">
-          <p className="eyebrow mb-5">
-            The Story
-          </p>
-          <h1 className="font-heading text-6xl leading-[0.92] sm:text-7xl lg:text-8xl">
+      <PageHero
+        image="/lookbook/felt-flower-headbands-garden.jpg"
+        alt="Two girls in a garden wearing handmade wool felt flower headbands"
+        eyebrow="The Story"
+        title={
+          <>
             Where texture
             <br />
-            meets <span className="italic">energy</span>
-          </h1>
-        </div>
-      </section>
+            meets <em>energy</em>
+          </>
+        }
+      />
 
       {/* Opening */}
       <section className="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
@@ -376,19 +369,11 @@ export default function AboutPage() {
             quiet power of crystals, there&rsquo;s something here that was
             made with you in mind.
           </p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Link
-              href="/shop"
-              className="inline-block border border-foreground px-8 py-3 text-xs tracking-[0.2em] uppercase hover:bg-foreground hover:text-background transition-colors"
-            >
-              Shop the Collection
-            </Link>
-            <Link
-              href="/pages/contact"
-              className="inline-block border border-border px-8 py-3 text-xs tracking-[0.2em] uppercase text-muted-foreground hover:border-foreground hover:text-foreground transition-colors"
-            >
-              Get in Touch
-            </Link>
+          <div className="flex flex-col justify-center gap-3 sm:flex-row">
+            <StorefrontCta href="/shop">Shop the collection</StorefrontCta>
+            <StorefrontCta href="/pages/contact" variant="outline">
+              Get in touch
+            </StorefrontCta>
           </div>
         </div>
       </section>

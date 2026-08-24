@@ -48,7 +48,7 @@ export function WishlistButton({
       variant="outline"
       onClick={toggle}
       disabled={pending}
-      className="h-12 w-full text-xs uppercase tracking-[0.15em]"
+      className="h-12 w-full rounded-none text-xs uppercase tracking-[0.15em]"
       aria-pressed={saved}
     >
       {pending ? (

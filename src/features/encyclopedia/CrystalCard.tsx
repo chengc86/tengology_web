@@ -10,7 +10,7 @@ export function CrystalCard({ crystal }: { crystal: Crystal }) {
   return (
     <Link
       href={`/encyclopedia/${crystal.slug}`}
-      className="group flex min-h-72 flex-col overflow-hidden rounded-lg border border-border bg-white shadow-sm transition hover:-translate-y-0.5 hover:border-rose hover:shadow-lg"
+      className="group flex min-h-72 flex-col overflow-hidden border bg-background transition hover:border-foreground/40"
     >
       <div className="grid aspect-[4/3] place-items-center bg-muted p-5">
         <img
@@ -29,7 +29,7 @@ export function CrystalCard({ crystal }: { crystal: Crystal }) {
               {crystal.color}
             </div>
           </div>
-          <span className="grid h-8 w-8 shrink-0 place-items-center rounded-md border border-border text-muted-foreground transition group-hover:border-rose group-hover:text-rose-dark">
+          <span className="grid h-8 w-8 shrink-0 place-items-center border text-muted-foreground transition group-hover:border-foreground group-hover:text-foreground">
             <ChevronRight className="h-4 w-4" />
           </span>
         </div>
@@ -37,7 +37,7 @@ export function CrystalCard({ crystal }: { crystal: Crystal }) {
         <div className="mt-auto flex w-full items-center justify-between gap-3 border-t border-border pt-3">
           <div className="flex flex-wrap gap-1.5">
             {crystal.chakra.slice(0, 2).map((c) => (
-              <span key={c} className="rounded-md bg-muted px-2 py-1 text-[10px] uppercase tracking-wider text-muted-foreground">
+              <span key={c} className="eyebrow bg-muted px-2 py-1">
                 {c.replace('-', ' ')}
               </span>
             ))}
