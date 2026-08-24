@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { connection } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { getSquarePublicConfig } from "@/lib/square";
@@ -10,6 +11,9 @@ export const metadata: Metadata = {
 };
 
 export default async function CheckoutPage() {
+  // Read Square env at request time. Next.js 16 can otherwise prerender
+  // this page with empty credentials and hide the card form forever.
+  await connection();
   const session = await auth();
 
   const [user, savedAddresses] = await Promise.all([

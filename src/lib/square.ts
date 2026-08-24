@@ -1,6 +1,20 @@
 import "server-only";
 import { SquareClient, SquareEnvironment, SquareError, WebhooksHelper, type Square } from "square";
-import { CURRENCY, fromMinorUnits, toMinorUnits } from "./money";
+import { CURRENCY, toMinorUnits } from "./money";
+import {
+  getSquareEnvironmentName,
+  getSquareLocationIdFromEnv,
+  hasSquareServerCredentials,
+  readEnv,
+} from "./square-env";
+import { interpretSquarePayment, isAuthorizedStatus, type SquarePaymentResult } from "./square-payment";
+
+export {
+  getSquarePublicConfig,
+  hasSquareServerCredentials,
+  isSquareCheckoutEnabled,
+} from "./square-env";
+export type { SquarePaymentResult } from "./square-payment";
 
 /**
  * Square Payments integration.
@@ -10,9 +24,10 @@ import { CURRENCY, fromMinorUnits, toMinorUnits } from "./money";
  * server. Every write carries an idempotency key derived from our own order
  * so a retried request can never charge twice.
  *
- * When credentials are absent the module reports `isSquareConfigured() === false`
- * and the checkout falls back to placing unpaid orders, so the shop is still
- * usable before the Square account is wired up.
+ * When checkout credentials are absent (`isSquareCheckoutEnabled() === false`)
+ * the checkout falls back to placing unpaid orders, so the shop is still
+ * usable before the Square account is wired up. Server-only credentials
+ * (`isSquareConfigured`) are enough for refunds of existing payments.
  */
 
 /**
@@ -40,20 +55,25 @@ function asCurrency(currency: string): Square.Currency {
   return currency as Square.Currency;
 }
 
+/** Server can talk to Square. Card checkout also needs the public application id. */
 export function isSquareConfigured(): boolean {
-  return Boolean(process.env.SQUARE_ACCESS_TOKEN && process.env.SQUARE_LOCATION_ID);
+  return hasSquareServerCredentials();
 }
 
 function squareEnvironment() {
-  return process.env.SQUARE_ENVIRONMENT === "production"
+  return getSquareEnvironmentName() === "production"
     ? SquareEnvironment.Production
     : SquareEnvironment.Sandbox;
 }
 
 let client: SquareClient | null = null;
 
+export function resetSquareClient() {
+  client = null;
+}
+
 export function getSquareClient(): SquareClient {
-  const token = process.env.SQUARE_ACCESS_TOKEN;
+  const token = readEnv("SQUARE_ACCESS_TOKEN");
   if (!token) {
     throw new Error("SQUARE_ACCESS_TOKEN is not set");
   }
@@ -67,7 +87,7 @@ export function getSquareClient(): SquareClient {
 }
 
 export function getSquareLocationId(): string {
-  const locationId = process.env.SQUARE_LOCATION_ID;
+  const locationId = getSquareLocationIdFromEnv();
   if (!locationId) throw new Error("SQUARE_LOCATION_ID is not set");
   return locationId;
 }
@@ -75,8 +95,10 @@ export function getSquareLocationId(): string {
 /** Turn any Square failure into a message safe to show a shopper. */
 export function describeSquareError(error: unknown): { code: string; message: string } {
   if (error instanceof SquareError) {
-    const detail = (error.body as { errors?: Array<{ code?: string; detail?: string; category?: string }> })
+    const fromSdk = error.errors?.[0];
+    const fromBody = (error.body as { errors?: Array<{ code?: string; detail?: string; category?: string }> })
       ?.errors?.[0];
+    const detail = fromSdk ?? fromBody;
     const code = detail?.code ?? "SQUARE_ERROR";
 
     const friendly: Record<string, string> = {
@@ -118,20 +140,6 @@ export interface CreatePaymentInput {
   shippingAddress?: SquareAddress;
 }
 
-export interface SquarePaymentResult {
-  ok: boolean;
-  paymentId?: string;
-  status?: string;
-  receiptUrl?: string;
-  cardBrand?: string;
-  last4?: string;
-  walletType?: string;
-  amount?: number;
-  errorCode?: string;
-  errorMessage?: string;
-  raw?: unknown;
-}
-
 export async function createSquarePayment(input: CreatePaymentInput): Promise<SquarePaymentResult> {
   const square = getSquareClient();
 
@@ -153,29 +161,21 @@ export async function createSquarePayment(input: CreatePaymentInput): Promise<Sq
       autocomplete: true,
     });
 
-    const payment = response.payment;
+    let payment = response.payment;
 
-    if (!payment) {
-      return { ok: false, errorCode: "NO_PAYMENT", errorMessage: "Square did not return a payment." };
+    // autocomplete:true normally captures immediately. If Square still
+    // returns APPROVED, complete the payment so the order is actually paid
+    // rather than failing checkout and releasing stock on an authorised card.
+    if (payment?.id && isAuthorizedStatus(payment.status)) {
+      try {
+        const completed = await square.payments.complete({ paymentId: payment.id });
+        if (completed.payment) payment = completed.payment;
+      } catch (error) {
+        console.warn("[square] CompletePayment after APPROVED failed; webhook may finish capture", error);
+      }
     }
 
-    // COMPLETED means captured. APPROVED means authorised but not captured —
-    // it should not happen with autocomplete, but treat it as not-yet-money.
-    const captured = payment.status === "COMPLETED";
-
-    return {
-      ok: captured,
-      paymentId: payment.id,
-      status: payment.status,
-      receiptUrl: payment.receiptUrl,
-      cardBrand: payment.cardDetails?.card?.cardBrand ?? undefined,
-      last4: payment.cardDetails?.card?.last4 ?? undefined,
-      walletType: payment.walletDetails?.brand ?? undefined,
-      amount: payment.amountMoney?.amount ? fromMinorUnits(payment.amountMoney.amount) : input.amount,
-      errorCode: captured ? undefined : payment.status,
-      errorMessage: captured ? undefined : `Payment is ${payment.status ?? "in an unexpected state"}.`,
-      raw: payment,
-    };
+    return interpretSquarePayment(payment, input.amount);
   } catch (error) {
     const { code, message } = describeSquareError(error);
     return { ok: false, errorCode: code, errorMessage: message, raw: serialiseError(error) };
@@ -244,8 +244,8 @@ export async function verifySquareWebhook(
   body: string,
   signatureHeader: string | null
 ): Promise<boolean> {
-  const signatureKey = process.env.SQUARE_WEBHOOK_SIGNATURE_KEY;
-  const notificationUrl = process.env.SQUARE_WEBHOOK_URL;
+  const signatureKey = readEnv("SQUARE_WEBHOOK_SIGNATURE_KEY");
+  const notificationUrl = readEnv("SQUARE_WEBHOOK_URL");
 
   if (!signatureKey || !notificationUrl || !signatureHeader) return false;
 
@@ -270,12 +270,3 @@ export function serialiseError(value: unknown): string {
   }
 }
 
-/** Client-side config for the Web Payments SDK. Safe to expose. */
-export function getSquarePublicConfig() {
-  return {
-    applicationId: process.env.NEXT_PUBLIC_SQUARE_APPLICATION_ID ?? "",
-    locationId: process.env.NEXT_PUBLIC_SQUARE_LOCATION_ID ?? process.env.SQUARE_LOCATION_ID ?? "",
-    environment: process.env.SQUARE_ENVIRONMENT === "production" ? "production" : "sandbox",
-    enabled: isSquareConfigured() && Boolean(process.env.NEXT_PUBLIC_SQUARE_APPLICATION_ID),
-  };
-}

@@ -5,7 +5,8 @@ import { prisma } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { priceCart, createPendingOrder, releaseOrderStock, recordOrderEvent, OrderStockError } from "@/lib/orders";
 import { getShippingOptions } from "@/lib/shipping";
-import { createSquarePayment, isSquareConfigured, serialiseError, type SquareAddress } from "@/lib/square";
+import { createSquarePayment, isSquareCheckoutEnabled, serialiseError, type SquareAddress } from "@/lib/square";
+import { isCapturedStatus } from "@/lib/square-payment";
 import { sendOrderConfirmation, sendAdminNewOrder, sendPaymentFailed } from "@/lib/email";
 import { ORDER_EVENT, ORDER_STATUS, PAYMENT_STATUS } from "@/lib/constants";
 import { CURRENCY } from "@/lib/money";
@@ -181,7 +182,7 @@ export async function placeOrder(input: unknown): Promise<PlaceOrderResult> {
     };
   }
 
-  const squareReady = isSquareConfigured();
+  const squareReady = isSquareCheckoutEnabled();
 
   if (squareReady && !data.sourceId) {
     return { ok: false, error: "Please enter your card details.", retryable: true };
@@ -276,6 +277,7 @@ export async function placeOrder(input: unknown): Promise<PlaceOrderResult> {
 
   if (!result.ok) {
     // 5a. Payment refused — release the stock, keep the order for the record.
+    // Square's id is stored when present so a later webhook can still match.
     await prisma.payment.update({
       where: { id: payment.id },
       data: {
@@ -312,11 +314,14 @@ export async function placeOrder(input: unknown): Promise<PlaceOrderResult> {
     };
   }
 
-  // 5b. Paid.
+  // 5b. Authorised or captured. COMPLETED is paid; APPROVED keeps the
+  //     order reserved until Square captures (or the webhook does).
+  const captured = isCapturedStatus(result.status);
+
   await prisma.payment.update({
     where: { id: payment.id },
     data: {
-      status: "COMPLETED",
+      status: result.status ?? (captured ? "COMPLETED" : "APPROVED"),
       squarePaymentId: result.paymentId ?? null,
       receiptUrl: result.receiptUrl ?? null,
       cardBrand: result.cardBrand ?? null,
@@ -328,21 +333,30 @@ export async function placeOrder(input: unknown): Promise<PlaceOrderResult> {
 
   await prisma.order.update({
     where: { id: order.id },
-    data: {
-      status: ORDER_STATUS.PAID,
-      paymentStatus: PAYMENT_STATUS.PAID,
-      paidAt: new Date(),
-      squarePaymentId: result.paymentId ?? null,
-      squareReceiptUrl: result.receiptUrl ?? null,
-    },
+    data: captured
+      ? {
+          status: ORDER_STATUS.PAID,
+          paymentStatus: PAYMENT_STATUS.PAID,
+          paidAt: new Date(),
+          squarePaymentId: result.paymentId ?? null,
+          squareReceiptUrl: result.receiptUrl ?? null,
+        }
+      : {
+          paymentStatus: PAYMENT_STATUS.AUTHORIZED,
+          squarePaymentId: result.paymentId ?? null,
+          squareReceiptUrl: result.receiptUrl ?? null,
+        },
   });
 
   await recordOrderEvent({
     orderId: order.id,
-    type: ORDER_EVENT.PAYMENT_SUCCEEDED,
-    message: `Payment received${result.cardBrand ? ` — ${result.cardBrand} ending ${result.last4}` : ""}`,
-    meta: { paymentId: result.paymentId },
+    type: captured ? ORDER_EVENT.PAYMENT_SUCCEEDED : ORDER_EVENT.NOTE,
+    message: captured
+      ? `Payment received${result.cardBrand ? ` — ${result.cardBrand} ending ${result.last4}` : ""}`
+      : "Card authorised — waiting for Square to capture the payment.",
+    meta: { paymentId: result.paymentId, status: result.status },
     actor: "system",
+    isCustomerVisible: captured,
   });
 
   await deliverNewOrderEmails(order.id, { confirmation: true });

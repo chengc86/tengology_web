@@ -17,6 +17,9 @@ const nextConfig: NextConfig = {
       canvas: { browser: "./src/lib/empty-module.ts" },
     },
   },
+  // The Square SDK uses BigInt amounts and Node fetch internals that
+  // break if the bundler rewrites the package.
+  serverExternalPackages: ["square"],
   experimental: {
     optimizePackageImports: ["lucide-react", "@react-three/drei"],
   },
