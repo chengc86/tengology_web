@@ -22,7 +22,7 @@ export function StorefrontCta({
         "eyebrow inline-flex items-center justify-center px-8 py-4 transition-colors",
         variant === "solid"
           ? "border border-foreground bg-foreground !text-background hover:bg-transparent hover:!text-foreground"
-          : "border border-foreground/25 !text-foreground hover:border-foreground",
+          : "border border-foreground/30 !text-foreground hover:border-foreground",
         className
       )}
     >

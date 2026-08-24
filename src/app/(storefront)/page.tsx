@@ -60,7 +60,7 @@ export default async function HomePage() {
                 Designed &amp; Made in Oxford
               </p>
               <h1
-                className="font-heading text-6xl leading-[0.92] motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-4 motion-safe:fill-mode-both motion-safe:duration-700 sm:text-7xl lg:text-8xl"
+                className="font-heading text-6xl leading-[0.92] text-foreground motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-4 motion-safe:fill-mode-both motion-safe:duration-700 sm:text-7xl lg:text-8xl"
                 style={{ animationDelay: "90ms" }}
               >
                 Made with
@@ -102,9 +102,9 @@ export default async function HomePage() {
       <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-32">
         <SectionHeading index="01" eyebrow="Shop by craft" title="Collections" />
         <div className="mt-12 grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-6">
-          {homeCollections.map((col, i) => (
-            <Reveal key={col.name} delay={i * 80}>
+            {homeCollections.map((col, i) => (
               <Link
+                key={col.name}
                 href={col.href}
                 className="group relative flex aspect-[3/4] items-end overflow-hidden bg-muted"
               >
@@ -116,11 +116,11 @@ export default async function HomePage() {
                   className="object-cover transition-transform duration-700 motion-safe:group-hover:scale-105"
                   style={{ transitionTimingFunction: "var(--ease-soft)" }}
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent" />
                 <span className="eyebrow absolute right-5 top-5 z-10">
                   0{i + 1}
                 </span>
-                <div className="relative z-10 p-5 lg:p-6">
+                <div className="relative z-10 w-full p-4 sm:p-5 lg:p-6">
                   <h3 className="font-heading text-xl leading-tight lg:text-2xl">
                     {col.name}
                   </h3>
@@ -135,9 +135,8 @@ export default async function HomePage() {
                   </span>
                 </div>
               </Link>
-            </Reveal>
-          ))}
-        </div>
+            ))}
+          </div>
       </section>
 
       {/* Featured Products */}
@@ -150,30 +149,26 @@ export default async function HomePage() {
             action={{ href: "/shop", label: "View all" }}
           />
           <div className="mt-12 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4 lg:gap-6">
-            {featuredProducts.map(
-              (
-                product: {
+              {featuredProducts.map(
+                (product: {
                   id: string;
                   slug: string;
                   title: string;
                   price: number;
                   compareAtPrice?: number | null;
                   images: { url: string }[];
-                },
-                i: number
-              ) => (
-                <Reveal key={product.id} delay={(i % 4) * 70}>
+                }) => (
                   <ProductCard
+                    key={product.id}
                     slug={product.slug}
                     title={product.title}
                     price={product.price}
                     compareAtPrice={product.compareAtPrice}
                     image={product.images[0]?.url}
                   />
-                </Reveal>
-              )
-            )}
-          </div>
+                )
+              )}
+            </div>
         </section>
       )}
 
@@ -186,9 +181,8 @@ export default async function HomePage() {
             title="Materials we work with"
           />
           <div className="mt-12 grid gap-4 sm:grid-cols-3 lg:gap-6">
-            {materials.map((material, i) => (
-              <Reveal key={material.name} delay={i * 80}>
-                <figure className="group">
+              {materials.map((material) => (
+                <figure key={material.name} className="group">
                   <div className="relative aspect-[4/5] overflow-hidden bg-muted">
                     <Image
                       src={material.image}
@@ -208,9 +202,8 @@ export default async function HomePage() {
                     </p>
                   </figcaption>
                 </figure>
-              </Reveal>
-            ))}
-          </div>
+              ))}
+            </div>
         </div>
       </section>
 

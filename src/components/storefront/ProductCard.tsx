@@ -40,11 +40,11 @@ export function ProductCard({
           </div>
         )}
       </div>
-      <div className="mt-4 flex items-baseline justify-between gap-3 border-t pt-3">
+      <div className="mt-4 flex flex-col gap-1 border-t pt-3 sm:flex-row sm:items-baseline sm:justify-between sm:gap-3">
         <h3 className="font-heading text-lg leading-tight transition-colors group-hover:text-moss-dark">
           {title}
         </h3>
-        <div className="flex shrink-0 items-baseline gap-2">
+        <div className="flex items-baseline gap-2 sm:shrink-0">
           {compareAtPrice && (
             <span className="text-xs text-muted-foreground line-through">
               {formatPrice(compareAtPrice)}

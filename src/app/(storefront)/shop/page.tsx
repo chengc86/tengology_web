@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Reveal } from "@/components/storefront/Reveal";
 import { prisma } from "@/lib/db";
 import { ProductCard } from "@/components/storefront/ProductCard";
 import { PageHero } from "@/components/storefront/PageHero";
@@ -415,9 +414,8 @@ export default async function ShopPage({
 
         {products.length > 0 ? (
           <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4 lg:gap-6">
-            {products.map(
-              (
-                product: {
+              {products.map(
+                (product: {
                   id: string;
                   slug: string;
                   title: string;
@@ -425,11 +423,9 @@ export default async function ShopPage({
                   compareAtPrice?: number | null;
                   category: string;
                   images: { url: string }[];
-                },
-                i: number
-              ) => (
-                <Reveal key={product.id} delay={(i % 4) * 70}>
+                }) => (
                   <ProductCard
+                    key={product.id}
                     slug={product.slug}
                     title={product.title}
                     price={product.price}
@@ -437,10 +433,9 @@ export default async function ShopPage({
                     image={product.images[0]?.url}
                     category={product.category}
                   />
-                </Reveal>
-              )
-            )}
-          </div>
+                )
+              )}
+            </div>
         ) : (
           <div className="border-t py-24 text-center">
             <p className="eyebrow mb-4">Nothing here yet</p>
