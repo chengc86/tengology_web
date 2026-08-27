@@ -39,9 +39,15 @@ export interface VerificationDetails {
   };
 }
 
+interface TokenResult {
+  status: string;
+  token?: string;
+  errors?: Array<{ message: string }>;
+}
+
 interface SquareCard {
   attach: (selector: string | HTMLElement) => Promise<void>;
-  tokenize: () => Promise<{ status: string; token?: string; errors?: Array<{ message: string }> }>;
+  tokenize: (verificationDetails?: Record<string, unknown>) => Promise<TokenResult>;
   destroy: () => Promise<void>;
 }
 
@@ -56,7 +62,7 @@ interface SquarePayments {
 declare global {
   interface Window {
     Square?: {
-      payments: (appId: string, locationId: string) => SquarePayments;
+      payments: (appId: string, locationId: string) => SquarePayments | Promise<SquarePayments>;
     };
   }
 }
@@ -127,7 +133,13 @@ export function SquareCardForm({
         await loadSquareSdk(environment);
         if (cancelled || !window.Square || !containerRef.current) return;
 
-        const payments = window.Square.payments(applicationId, locationId);
+        if (!applicationId || !locationId) {
+          throw new Error("Square is missing an application or location id.");
+        }
+
+        // Recent square.js builds return a Promise; older ones return the
+        // Payments object. await is a no-op on a non-Promise.
+        const payments = await window.Square.payments(applicationId, locationId);
         paymentsRef.current = payments;
 
         const card = await payments.card({
@@ -179,7 +191,24 @@ export function SquareCardForm({
         }
 
         try {
-          const result = await card.tokenize();
+          const verificationDetails = {
+            amount: details.amount,
+            currencyCode: currency,
+            intent: "CHARGE",
+            customerInitiated: true,
+            sellerKeepsCard: false,
+            billingContact: details.billingContact,
+          };
+
+          // Current Web Payments SDK runs 3-D Secure inside tokenize() when
+          // these details are passed. Fall back to tokenize() + verifyBuyer
+          // if this square.js build still uses the older two-step API.
+          let result: TokenResult;
+          try {
+            result = await card.tokenize(verificationDetails);
+          } catch {
+            result = await card.tokenize();
+          }
 
           if (result.status !== "OK" || !result.token) {
             return {
@@ -188,22 +217,13 @@ export function SquareCardForm({
             };
           }
 
-          // Strong Customer Authentication. If the bank challenges the buyer,
-          // Square renders the 3-D Secure modal here and resolves once passed.
           let verificationToken: string | undefined;
           try {
-            const verification = await payments.verifyBuyer(result.token, {
-              amount: details.amount,
-              currencyCode: currency,
-              intent: "CHARGE",
-              customerInitiated: true,
-              sellerKeepsCard: false,
-              billingContact: details.billingContact,
-            });
+            const verification = await payments.verifyBuyer(result.token, verificationDetails);
             verificationToken = verification?.token;
           } catch {
-            // A failed challenge still lets the payment attempt proceed;
-            // Square will decline it server-side if SCA was mandatory.
+            // Tokenize may already have completed SCA. If the bank still
+            // requires a challenge token, Square declines server-side.
           }
 
           return { ok: true, token: result.token, verificationToken };

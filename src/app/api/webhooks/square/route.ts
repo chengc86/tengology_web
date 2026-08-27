@@ -1,6 +1,14 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { verifySquareWebhook } from "@/lib/square";
+import {
+  extractPaymentPayload,
+  extractRefundPayload,
+  extractWebhookType,
+  type SquarePaymentPayload,
+  type SquareRefundPayload,
+} from "@/lib/square-webhooks";
+import { reconcilePaymentUpdate } from "@/lib/square-payment";
 import { fromMinorUnits, round2 } from "@/lib/money";
 import { recordOrderEvent } from "@/lib/orders";
 import { ORDER_EVENT, ORDER_STATUS, PAYMENT_STATUS } from "@/lib/constants";
@@ -25,10 +33,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
   }
 
-  let event: {
-    type?: string;
-    data?: { object?: Record<string, unknown> };
-  };
+  let event: unknown;
 
   try {
     event = JSON.parse(body);
@@ -36,16 +41,18 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Malformed payload" }, { status: 400 });
   }
 
+  const type = extractWebhookType(event);
+
   try {
-    switch (event.type) {
+    switch (type) {
       case "payment.updated":
       case "payment.created":
-        await handlePaymentUpdate(event.data?.object?.payment as SquarePaymentPayload | undefined);
+        await handlePaymentUpdate(extractPaymentPayload(event));
         break;
 
       case "refund.updated":
       case "refund.created":
-        await handleRefundUpdate(event.data?.object?.refund as SquareRefundPayload | undefined);
+        await handleRefundUpdate(extractRefundPayload(event));
         break;
 
       default:
@@ -53,7 +60,7 @@ export async function POST(request: Request) {
         break;
     }
   } catch (error) {
-    console.error("[square-webhook] handler failed", event.type, error);
+    console.error("[square-webhook] handler failed", type, error);
     // 500 tells Square to retry, which is what we want for a transient failure.
     return NextResponse.json({ error: "Handler failed" }, { status: 500 });
   }
@@ -61,45 +68,69 @@ export async function POST(request: Request) {
   return NextResponse.json({ received: true });
 }
 
-interface SquarePaymentPayload {
-  id?: string;
-  status?: string;
-  receipt_url?: string;
-  refunded_money?: { amount?: number };
-  amount_money?: { amount?: number };
-}
-
 async function handlePaymentUpdate(payload?: SquarePaymentPayload) {
   if (!payload?.id) return;
 
-  const payment = await prisma.payment.findUnique({
+  let payment = await prisma.payment.findUnique({
     where: { squarePaymentId: payload.id },
     include: { order: true },
   });
 
-  if (!payment) return;
+  // Checkout writes squarePaymentId after CreatePayment returns. A
+  // payment.created event can land in that window — match on the order
+  // number we sent as Square's reference_id and attach the id.
+  if (!payment && payload.referenceId) {
+    const order = await prisma.order.findUnique({
+      where: { orderNumber: payload.referenceId },
+      include: {
+        payments: { orderBy: { createdAt: "desc" } },
+      },
+    });
 
-  const status = payload.status ?? payment.status;
-  if (status === payment.status) return;
+    const pending = order?.payments.find(
+      (row) => !row.squarePaymentId || row.squarePaymentId === payload.id
+    );
+
+    if (pending) {
+      payment = await prisma.payment.update({
+        where: { id: pending.id },
+        data: { squarePaymentId: payload.id },
+        include: { order: true },
+      });
+    }
+  }
+
+  if (!payment) {
+    console.warn("[square-webhook] payment not matched", payload.id, payload.referenceId);
+    return;
+  }
+
+  const incoming = payload.status ?? payment.status;
+  const plan = reconcilePaymentUpdate({
+    localPaymentStatus: payment.status,
+    localOrderStatus: payment.order.status,
+    localOrderPaymentStatus: payment.order.paymentStatus,
+    incomingStatus: incoming,
+  });
+
+  if (plan.skip) return;
 
   await prisma.payment.update({
     where: { id: payment.id },
-    data: { status, receiptUrl: payload.receipt_url ?? payment.receiptUrl },
+    data: { status: plan.paymentStatus, receiptUrl: payload.receiptUrl ?? payment.receiptUrl },
   });
 
   const order = payment.order;
 
-  // A payment that lands as COMPLETED out of band (e.g. delayed capture)
-  // still needs to flip the order to paid.
-  if (status === "COMPLETED" && order.paymentStatus !== PAYMENT_STATUS.PAID) {
+  if (plan.markOrderPaid) {
     await prisma.order.update({
       where: { id: order.id },
       data: {
         paymentStatus: PAYMENT_STATUS.PAID,
-        status: order.status === ORDER_STATUS.PENDING ? ORDER_STATUS.PAID : order.status,
+        status: plan.nextOrderStatus ?? order.status,
         paidAt: order.paidAt ?? new Date(),
         squarePaymentId: payload.id,
-        squareReceiptUrl: payload.receipt_url ?? order.squareReceiptUrl,
+        squareReceiptUrl: payload.receiptUrl ?? order.squareReceiptUrl,
       },
     });
 
@@ -112,7 +143,7 @@ async function handlePaymentUpdate(payload?: SquarePaymentPayload) {
     return;
   }
 
-  if (status === "CANCELED" || status === "FAILED") {
+  if (plan.markOrderFailed) {
     await prisma.order.update({
       where: { id: order.id },
       data: { paymentStatus: PAYMENT_STATUS.FAILED },
@@ -121,18 +152,11 @@ async function handlePaymentUpdate(payload?: SquarePaymentPayload) {
     await recordOrderEvent({
       orderId: order.id,
       type: ORDER_EVENT.PAYMENT_FAILED,
-      message: `Square reported the payment as ${status.toLowerCase()}`,
+      message: `Square reported the payment as ${incoming.toLowerCase()}`,
       actor: "square-webhook",
       isCustomerVisible: false,
     });
   }
-}
-
-interface SquareRefundPayload {
-  id?: string;
-  status?: string;
-  payment_id?: string;
-  amount_money?: { amount?: number };
 }
 
 async function handleRefundUpdate(payload?: SquareRefundPayload) {
@@ -145,15 +169,15 @@ async function handleRefundUpdate(payload?: SquareRefundPayload) {
 
   // A refund issued from the Square dashboard has no local record yet.
   if (!existing) {
-    if (!payload.payment_id || payload.status !== "COMPLETED") return;
+    if (!payload.paymentId || payload.status !== "COMPLETED") return;
 
     const payment = await prisma.payment.findUnique({
-      where: { squarePaymentId: payload.payment_id },
+      where: { squarePaymentId: payload.paymentId },
       include: { order: true },
     });
     if (!payment) return;
 
-    const amount = fromMinorUnits(payload.amount_money?.amount ?? 0);
+    const amount = fromMinorUnits(payload.amountMinor ?? 0);
     if (amount <= 0) return;
 
     await prisma.refund.create({
