@@ -269,11 +269,19 @@ export default function AboutPage() {
               <p className="eyebrow mb-4">
                 The Thread
               </p>
-              <h2 className="font-heading text-4xl leading-[0.95] lg:text-5xl">
+              <h2 className="font-heading text-4xl leading-[0.95] mb-6 lg:text-5xl">
                 What connects
                 <br />
                 <span className="italic">everything</span>
               </h2>
+              <div className="relative aspect-[3/4] overflow-hidden">
+                <Image
+                  src="/lookbook/maker-at-market.jpg"
+                  alt="The maker at market, wearing a handmade sunflower felt brooch"
+                  fill
+                  className="object-cover"
+                />
+              </div>
             </div>
             <div className="lg:col-span-3 space-y-5 text-muted-foreground leading-relaxed">
               <p>

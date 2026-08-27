@@ -17,19 +17,19 @@ export const homeCollections = [
     name: "Jewellery",
     href: "/shop?category=JEWELLERY",
     description: "Unique earrings, rings & necklaces",
-    image: "/lookbook/howlite-worn-1.jpg",
+    image: "/products/comet/pearl-carnelian-cluster-earrings-hero.jpg",
   },
   {
     name: "Christmas",
     href: "/shop?category=CHRISTMAS_ORNAMENTS",
     description: "Festive ornaments & decorations",
-    image: "/lookbook/felt-sprout-ornaments-pair.jpg",
+    image: "/lookbook/felt-sprout-ornaments-wreath-scatter.jpg",
   },
   {
     name: "Brooches",
     href: "/shop?category=BROOCHES",
     description: "Statement brooches & pins",
-    image: "/Gemini_Generated_Image_9wvh4a9wvh4a9wvh.png",
+    image: "/products/sunflower/sunflower-brooch-cardigan-lifestyle.jpg",
   },
 ] as const;
 
@@ -43,8 +43,8 @@ export const categoryHeroes: Record<
     eyebrow: "Wool felt",
   },
   JEWELLERY: {
-    image: "/lookbook/clear-quartz-worn-2.jpg",
-    alt: "Clear quartz bracelet styled with a white linen outfit",
+    image: "/lookbook/pearl-necklace-bracelet-rings.jpg",
+    alt: "Pearl necklace, bracelet and rings photographed with the Tengology mark",
     eyebrow: "Crystal jewellery",
   },
   CHRISTMAS_ORNAMENTS: {
@@ -53,8 +53,8 @@ export const categoryHeroes: Record<
     eyebrow: "The festive studio",
   },
   BROOCHES: {
-    image: "/Gemini_Generated_Image_9wvh4a9wvh4a9wvh.png",
-    alt: "Handmade felt, batik and glass brooches arranged on a ceramic plate",
+    image: "/products/sunflower/sunflower-brooch-denim.jpg",
+    alt: "Handmade sunflower felt brooch pinned to a denim jacket",
     eyebrow: "Pins & brooches",
   },
 };

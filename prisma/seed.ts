@@ -103,6 +103,14 @@ async function main() {
           url: "/products/strawberries/flat-lay-top.jpg",
           altText: "The full Strawberries collection laid out on a kraft background",
         },
+        {
+          url: "/collections/strawberries.jpg",
+          altText: "Strawberries collection pieces on Tengology kraft tags",
+        },
+        {
+          url: "/products/strawberries/collection-flatlay-white-2.jpg",
+          altText: "Strawberry felt headband laid out with matching clips and hair elastic",
+        },
       ],
     },
     {
@@ -125,8 +133,16 @@ async function main() {
           altText: "Sage-ribbon strawberry felt headband close-up",
         },
         {
+          url: "/products/strawberries/collection-flatlay-white-2.jpg",
+          altText: "Sage-green strawberry felt headband with matching clips",
+        },
+        {
           url: "/products/strawberries/flat-lay-top.jpg",
           altText: "The full Strawberries collection laid out on a kraft background",
+        },
+        {
+          url: "/collections/strawberries.jpg",
+          altText: "Strawberries collection pieces on Tengology kraft tags",
         },
       ],
     },
@@ -146,8 +162,16 @@ async function main() {
       collection: "Strawberries",
       images: [
         {
+          url: "/products/strawberries/collection-flatlay-white.jpg",
+          altText: "Strawberry hair clip pair with matching strawberry accessories",
+        },
+        {
           url: "/products/strawberries/flat-lay-top.jpg",
           altText: "Strawberry hair clip pair shown with the rest of the Strawberries collection",
+        },
+        {
+          url: "/collections/strawberries.jpg",
+          altText: "Strawberry clips on Tengology kraft tags",
         },
       ],
     },
@@ -167,8 +191,16 @@ async function main() {
       collection: "Strawberries",
       images: [
         {
+          url: "/products/strawberries/claw-clip-worn.jpg",
+          altText: "Strawberry cluster claw clip worn in a half-up hairstyle",
+        },
+        {
           url: "/products/strawberries/flat-lay-angle-1.jpg",
           altText: "Strawberry cluster hair pin in the Strawberries collection",
+        },
+        {
+          url: "/products/strawberries/collection-flatlay-white.jpg",
+          altText: "Strawberry cluster clip shown with the rest of the family",
         },
       ],
     },
@@ -191,6 +223,10 @@ async function main() {
           url: "/products/strawberries/flat-lay-angle-2.jpg",
           altText: "Single strawberry hair clip in the Strawberries collection",
         },
+        {
+          url: "/products/strawberries/collection-flatlay-white.jpg",
+          altText: "Single strawberry clips laid out with matching accessories",
+        },
       ],
     },
     {
@@ -209,8 +245,16 @@ async function main() {
       collection: "Strawberries",
       images: [
         {
+          url: "/products/strawberries/collection-flatlay-white-2.jpg",
+          altText: "Strawberry felt scrunchie with matching strawberry accessories",
+        },
+        {
           url: "/products/strawberries/flat-lay-top.jpg",
           altText: "Strawberry felt scrunchie shown in the Strawberries collection",
+        },
+        {
+          url: "/collections/strawberries.jpg",
+          altText: "Strawberry scrunchie on a Tengology kraft tag with the collection",
         },
       ],
     },
@@ -230,8 +274,16 @@ async function main() {
       collection: "Strawberries",
       images: [
         {
+          url: "/products/strawberries/hat-cluster-worn.jpg",
+          altText: "Strawberry and blossom felt cluster worn on a straw hat",
+        },
+        {
           url: "/products/strawberries/flat-lay-angle-1.jpg",
           altText: "Strawberry and blossom felt brooch with the Strawberries collection",
+        },
+        {
+          url: "/collections/strawberries.jpg",
+          altText: "Strawberry brooch on a Tengology kraft tag",
         },
       ],
     },
@@ -478,6 +530,7 @@ async function main() {
         { url: "/products/spring-bouquet/daffodil-brooch-golden-hero.jpg", altText: "Spring bouquet brooch with golden daffodil" },
         { url: "/products/spring-bouquet/daffodil-brooch-pale-hero.jpg", altText: "Spring bouquet brooch with pale daffodil and coral pansy" },
         { url: "/products/spring-bouquet/daffodil-brooch-golden-2.jpg", altText: "Golden daffodil bouquet brooch from above" },
+        { url: "/products/spring-bouquet/daffodil-brooch-pale-2.jpg", altText: "Pale daffodil and coral bouquet brooch from above" },
       ],
       variants: [
         { name: "Golden Daffodil", stockCount: 1, imageUrl: "/products/spring-bouquet/daffodil-brooch-golden-hero.jpg" },
@@ -670,6 +723,11 @@ async function main() {
       isFeatured: true,
       collection: "Statement Blooms",
       images: [
+        { url: "/products/statement-blooms/sunflower-hero.jpg", altText: "Sunflower felt headband held in hand" },
+        { url: "/products/sunflower/sunflower-headband-held.jpg", altText: "Sunflower felt headband shown from a second handheld angle" },
+        { url: "/products/sunflower/sunflower-headband-original-v1.jpeg", altText: "Sunflower felt headband photographed on a studio surface" },
+        { url: "/products/sunflower/sunflower-headband-on-basket.jpg", altText: "Sunflower felt headband displayed on a woven basket" },
+        { url: "/products/sunflower/sunflower-headband-on-stone.jpg", altText: "Sunflower felt headband displayed on a stone" },
         { url: "/products/sunflower/sunflower-headband-and-clips-flatlay-v2.jpeg", altText: "Sunflower felt headband photographed with matching clips on ivory fabric" },
         { url: "/products/sunflower/sunflower-headband-clips-closeup-v2.jpeg", altText: "Close-up of the sunflower felt headband and matching clips" },
         { url: "/products/sunflower/sunflower-headband-clips-linen-v2.jpeg", altText: "Sunflower headband and clips arranged on textured linen" },
@@ -691,7 +749,17 @@ async function main() {
       isFeatured: true,
       collection: "Statement Blooms",
       images: [
+        { url: "/products/sunflower/sunflower-brooch-card-original-v1.jpeg", altText: "Sunflower felt brooch on a Tengology kraft card" },
         { url: "/products/sunflower/sunflower-brooch-front-v2.jpeg", altText: "Front view of the sunflower felt brooch on ivory fabric" },
+        { url: "/products/sunflower/sunflower-brooch-card-fair.jpg", altText: "Sunflower felt brooch on a Tengology card at the market" },
+        { url: "/products/sunflower/sunflower-brooch-card-fair-2.jpg", altText: "Sunflower felt brooch held on its handmade card" },
+        { url: "/products/sunflower/sunflower-brooch-denim.jpg", altText: "Sunflower felt brooch pinned to a denim jacket" },
+        { url: "/products/sunflower/sunflower-brooch-denim-side.jpg", altText: "Sunflower felt brooch on denim, side view" },
+        { url: "/products/sunflower/sunflower-brooch-cardigan-lifestyle.jpg", altText: "Sunflower felt brooch worn on a cream cardigan outdoors" },
+        { url: "/products/sunflower/sunflower-brooch-cardigan-close.jpg", altText: "Close-up of the sunflower felt brooch on a ribbed cardigan" },
+        { url: "/products/sunflower/sunflower-brooch-on-wicker.jpg", altText: "Sunflower felt brooch photographed on a woven basket" },
+        { url: "/products/sunflower/sunflower-brooch-flat-original-v1.jpeg", altText: "Sunflower felt brooch laid flat" },
+        { url: "/products/sunflower/sunflower-brooch-lifestyle-v1.jpeg", altText: "Sunflower felt brooch lifestyle photograph" },
         { url: "/products/sunflower/sunflower-brooch-back-v2.jpeg", altText: "Back view of the sunflower felt brooch showing the metal pin" },
         { url: "/products/sunflower/sunflower-accessories-flatlay-v2.jpeg", altText: "Sunflower headband, brooch, barrette, and hair clip arranged together" },
         { url: "/products/sunflower/sunflower-maker-table-close-v2.jpeg", altText: "Sunflower felt brooches and accessories on the studio worktable" },
@@ -733,6 +801,8 @@ async function main() {
       isFeatured: true,
       collection: "Statement Blooms",
       images: [
+        { url: "/products/sunflower/sunflower-clip-on-wicker.jpg", altText: "Smaller sunflower felt hair clip on a woven basket" },
+        { url: "/products/sunflower/sunflower-flower-on-wicker.jpg", altText: "Sunflower felt flower close-up on wicker" },
         { url: "/products/sunflower/sunflower-headband-clips-linen-v2.jpeg", altText: "Smaller sunflower felt hair clip shown with matching headband and accessories" },
         { url: "/products/sunflower/sunflower-headband-clips-closeup-v2.jpeg", altText: "Close-up of the smaller sunflower felt hair clip and matching headband" },
         { url: "/products/sunflower/sunflower-accessories-flatlay-v2.jpeg", altText: "Sunflower felt hair clip with the matching headband, barrette, and brooch" },
@@ -856,9 +926,9 @@ async function main() {
       intention: "Focus",
       images: [
         {
-          url: "/products/comet/listing/green-fluorite-cluster-drop-earrings-white.jpg",
+          url: "/products/comet/green-fluorite-cluster-drop-earrings-hero.jpg",
           altText:
-            "Pair of green fluorite cluster drop earrings on a pure white background",
+            "Green fluorite cluster drop earrings photographed with the Tengology mark",
         },
         {
           url: "/products/comet/try-on/imagegen/green-fluorite-cluster-drop-earrings-try-on.png",
@@ -885,9 +955,9 @@ async function main() {
       intention: "Stillness",
       images: [
         {
-          url: "/products/comet/listing/milky-quartz-cluster-earrings-white.jpg",
+          url: "/products/comet/milky-quartz-cluster-earrings-hero.jpg",
           altText:
-            "Pair of milky quartz cluster earrings on a pure white background",
+            "Milky quartz cluster earrings photographed with the Tengology mark",
         },
         {
           url: "/products/comet/try-on/imagegen/milky-quartz-cluster-earrings-try-on.png",
@@ -914,9 +984,9 @@ async function main() {
       intention: "Softness",
       images: [
         {
-          url: "/products/comet/listing/rose-quartz-star-cluster-earrings-white.jpg",
+          url: "/products/comet/rose-quartz-star-cluster-earrings-hero.jpg",
           altText:
-            "Pair of rose quartz star cluster earrings on a pure white background",
+            "Rose quartz star cluster earrings photographed with the Tengology mark",
         },
         {
           url: "/products/comet/try-on/imagegen/rose-quartz-star-cluster-earrings-try-on.png",
@@ -943,14 +1013,14 @@ async function main() {
       intention: "Protection",
       images: [
         {
-          url: "/products/comet/listing/smoky-quartz-drop-earrings-white.jpg",
+          url: "/products/comet/smoky-quartz-drop-earrings-hero.jpg",
           altText:
-            "Front view of smoky quartz statement drop earrings on a pure white background",
+            "Smoky quartz statement drop earrings photographed with the Tengology mark",
         },
         {
-          url: "/products/comet/listing/smoky-quartz-drop-earrings-2-white.jpg",
+          url: "/products/comet/smoky-quartz-drop-earrings-2.jpg",
           altText:
-            "Second view of smoky quartz statement drop earrings on a pure white background",
+            "Second view of smoky quartz statement drop earrings with the Tengology mark",
         },
         {
           url: "/products/comet/try-on/imagegen/smoky-quartz-drop-earrings-try-on.png",
@@ -977,9 +1047,9 @@ async function main() {
       intention: "Clarity",
       images: [
         {
-          url: "/products/comet/listing/clear-quartz-star-cluster-earrings-white.jpg",
+          url: "/products/comet/clear-quartz-star-cluster-earrings-hero.jpg",
           altText:
-            "Pair of clear quartz star cluster earrings on a pure white background",
+            "Clear quartz star cluster earrings photographed with the Tengology mark",
         },
         {
           url: "/products/comet/try-on/imagegen/clear-quartz-star-cluster-earrings-try-on.png",
@@ -1006,9 +1076,9 @@ async function main() {
       intention: "Energy",
       images: [
         {
-          url: "/products/comet/listing/pearl-carnelian-cluster-earrings-white.jpg",
+          url: "/products/comet/pearl-carnelian-cluster-earrings-hero.jpg",
           altText:
-            "Pair of pearl and carnelian cluster earrings on a pure white background",
+            "Pearl and carnelian cluster earrings photographed with the Tengology mark",
         },
         {
           url: "/products/comet/try-on/imagegen/pearl-carnelian-cluster-earrings-try-on.png",

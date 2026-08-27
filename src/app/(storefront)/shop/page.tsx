@@ -98,7 +98,7 @@ const collectionShowcases: Record<
       detail:
         "4mm bead studs with a 7–8mm crystal drop attached by hand-wrapped wire. Available in Argentium Silver and Gold-filled to match your stack.",
       tags: ["4mm stud", "7–8mm drop", "Wire wrap"],
-      image: "/lookbook/rose-quartz-rose-detail-1.jpg",
+      image: "/lookbook/rose-quartz-rose-detail-2.jpg",
     },
     {
       name: "Titan",

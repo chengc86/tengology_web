@@ -81,6 +81,10 @@ const LIFESTYLE_PHOTOS: Record<string, LifestylePhoto[]> = {
     { src: '/lookbook/silver-sheen-obsidian-rondelle-detail-1.jpg', alt: 'Silver sheen obsidian rondelle bracelets held in the palm of a hand' },
     { src: '/lookbook/silver-sheen-obsidian-rondelle-worn-1.jpg', alt: 'Silver sheen obsidian rondelle bracelet worn on a wrist' },
   ],
+  'tigers-eye': [
+    { src: '/lookbook/tigers-eye-detail-1.jpg', alt: "Tiger's eye bracelet arranged on a fabric tray" },
+    { src: '/lookbook/tigers-eye-worn-1.jpg', alt: "Tiger's eye bracelet worn on a wrist" },
+  ],
 };
 
 const LIFESTYLE_PHOTOS_BY_SIZE: Record<string, Record<number, LifestylePhoto[]>> = {
